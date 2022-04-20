@@ -1,6 +1,10 @@
 {
   "entryPoints": [
-    "./src/index.ts"
+    "./src/index.ts",
+    "./src/mapReduce.ts",
+    "./src/addMapReduce.ts",
+    "./src/subMapReduce.ts",
+    "./src/prodMapReduce.ts"
   ],
   "out": "./typedoc"
 }
