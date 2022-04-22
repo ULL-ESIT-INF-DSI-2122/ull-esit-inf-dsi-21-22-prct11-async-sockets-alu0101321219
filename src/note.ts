@@ -1,3 +1,7 @@
+/**
+ * Alias de tipo empleado para definir los colores que puede
+ * tener una nota.
+ */
 export type Color = 'red' | 'green' | 'blue' | 'yellow';
 
 /**
