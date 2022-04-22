@@ -51,4 +51,33 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'remove',
+  describe: 'Remove an existing note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      if (fs.existsSync(`./notes/${argv.user}/${argv.title}.json`)) {
+        fs.rmSync(`./notes/${argv.user}/${argv.title}.json`);
+        console.log(`Note "${argv.title} has been removed correctly!`);
+      } else {
+        console.log("Error: This note doesn't exist!");
+      }
+    }
+  },
+});
+
+
+
 yargs.parse();
