@@ -1,9 +1,9 @@
 import 'mocha';
 import {expect} from 'chai';
-import {AddMapReduce} from './../src/addMapReduce';
-import {SubMapReduce} from './../src/subMapReduce';
-import {ProdMapReduce} from './../src/prodMapReduce';
-import {MapReduce} from '../src/mapReduce';
+import {AddMapReduce} from './../src/modificacion/addMapReduce';
+import {SubMapReduce} from './../src/modificacion/subMapReduce';
+import {ProdMapReduce} from './../src/modificacion/prodMapReduce';
+import {MapReduce} from '../src/modificacion/mapReduce';
 
 const myfuncion = function(n: number):number {
   return n *2;
