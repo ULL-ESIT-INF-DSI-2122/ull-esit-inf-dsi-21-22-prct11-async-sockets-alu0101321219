@@ -1,6 +1,7 @@
 import * as yargs from 'yargs';
-import * as fs from 'fs';
+import * as chalk from 'chalk';
 import {Note} from './note';
+import {NoteManagement} from './noteMagenement';
 
 yargs.command({
   command: 'add',
@@ -31,21 +32,9 @@ yargs.command({
     if (typeof argv.user === 'string' && typeof argv.title === 'string' &&
       typeof argv.body === 'string' && typeof argv.color === 'string') {
       if (argv.color == 'red' || argv.color == 'green' || argv.color == 'blue' || argv.color == 'yellow') {
-        const myNote: Note = new Note(argv.title, argv.body, argv.color);
-        if (!fs.existsSync('./notes')) {
-          fs.mkdirSync('./notes');
-        }
-        if (!fs.existsSync(`./notes/${argv.user}`)) {
-          fs.mkdirSync(`./notes/${argv.user}`);
-        }
-        if (fs.existsSync(`./notes/${argv.user}/${argv.title}.json`)) {
-          console.log('Error: This note already exists!');
-        } else {
-          fs.writeFileSync(`./notes/${argv.user}/${argv.title}.json`, JSON.stringify(myNote));
-          console.log(`Note "${argv.title}" has been added correctly!`);
-        }
+        console.log(new NoteManagement().addNote(new Note(argv.title, argv.body, argv.color), argv.user));
       } else {
-        console.log('Error: color not valid (valid colors = "red", "green", "blue", "yellow"');
+        console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
       }
     }
   },
@@ -68,16 +57,31 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.user === 'string' && typeof argv.title === 'string') {
-      if (fs.existsSync(`./notes/${argv.user}/${argv.title}.json`)) {
-        fs.rmSync(`./notes/${argv.user}/${argv.title}.json`);
-        console.log(`Note "${argv.title} has been removed correctly!`);
-      } else {
-        console.log("Error: This note doesn't exist!");
-      }
+      console.log(new NoteManagement().removeNote(argv.title, argv.user));
     }
   },
 });
 
-
+yargs.command({
+  command: 'read',
+  describe: 'Read an user note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      console.log(new NoteManagement().readNote(argv.title, argv.user));
+    }
+  },
+});
 
 yargs.parse();
