@@ -32,10 +32,10 @@ export class NotePrinter {
    */
   public print(): string {
     switch (this.note.getColor()) {
-      case 'red': return this.printTitle() + '\n' + chalk.red.inverse(this.note.getBody());
-      case 'green': return this.printTitle() + '\n' + chalk.green.inverse(this.note.getBody());
-      case 'blue': return this.printTitle() + '\n' + chalk.blue.inverse(this.note.getBody());
-      case 'yellow': return this.printTitle() + '\n' + chalk.yellow.inverse(this.note.getBody());
+      case 'red': return this.printTitle() + '\n' + chalk.red.inverse(this.note.getBody() + '\n');
+      case 'green': return this.printTitle() + '\n' + chalk.green.inverse(this.note.getBody() + '\n');
+      case 'blue': return this.printTitle() + '\n' + chalk.blue.inverse(this.note.getBody() + '\n');
+      case 'yellow': return this.printTitle() + '\n' + chalk.yellow.inverse(this.note.getBody() + '\n');
     }
   }
 }
