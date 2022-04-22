@@ -51,13 +51,32 @@ yargs.command({
     },
     title: {
       describe: 'Note title',
-      demandOption: true,
+      demandOption: false,
       type: 'string',
     },
   },
   handler(argv) {
     if (typeof argv.user === 'string' && typeof argv.title === 'string') {
       console.log(new NoteManagement().removeNote(argv.title, argv.user));
+    } else if (typeof argv.user == 'string' && typeof argv.title === 'undefined') {
+      console.log(new NoteManagement().removeAllUserNotes(argv.user));
+    }
+  },
+});
+
+yargs.command({
+  command: 'list',
+  describe: 'List all titles of user notes',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string') {
+      console.log(new NoteManagement().listNotes(argv.user));
     }
   },
 });
