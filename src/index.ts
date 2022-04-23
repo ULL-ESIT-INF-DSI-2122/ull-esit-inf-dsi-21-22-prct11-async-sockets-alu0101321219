@@ -65,6 +65,50 @@ yargs.command({
 });
 
 yargs.command({
+  command: 'mod',
+  describe: 'Modify a note',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+    body: {
+      describe: 'New body',
+      demandOption: false,
+      type: 'string',
+    },
+    color: {
+      describe: 'New color',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      if (typeof argv.body === 'string') {
+        console.log(new NoteManagement().modNoteBody(argv.title, argv.user, argv.body));
+      }
+      if (typeof argv.color === 'string') {
+        if (argv.color == 'red' || argv.color == 'green' || argv.color == 'blue' || argv.color == 'yellow') {
+          console.log(new NoteManagement().modNoteColor(argv.title, argv.user, argv.color));
+        } else {
+          console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
+        }
+      }
+      if (typeof argv.body === 'undefined' && typeof argv.color === 'undefined') {
+        console.log(chalk.yellow('Please, type a new body or a new color to modify the note'));
+      }
+    }
+  },
+});
+
+yargs.command({
   command: 'list',
   describe: 'List all titles of user notes',
   builder: {
