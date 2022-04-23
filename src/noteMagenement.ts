@@ -13,8 +13,26 @@ export class NoteManagement {
    * Inicializa un objeto de la clase 'NoteManagement'
    */
   constructor() {
+    this.inicialize();
+  }
+
+  /**
+   * Inicializa la creación de notas creando un directorio donde
+   * almacenar todas y cada una de estas, si es que no existe.
+   */
+  private inicialize(): void {
     if (!fs.existsSync('./notes')) {
       fs.mkdirSync('./notes');
+    }
+  }
+
+  /**
+   * Elimina, el directorio donde se almacenan todas las notas en el caso
+   * de que este se encuentre vacío.
+   */
+  private end(): void {
+    if (fs.readdirSync('./notes').length == 0) {
+      fs.rmdirSync('./notes');
     }
   }
 
@@ -26,6 +44,7 @@ export class NoteManagement {
    * creación de la nota.
    */
   public addNote(note: Note, owner: string): string {
+    this.inicialize();
     if (!fs.existsSync(`./notes/${owner}`)) {
       fs.mkdirSync(`./notes/${owner}`);
     }
@@ -51,9 +70,7 @@ export class NoteManagement {
       if (fs.readdirSync(`./notes/${owner}`).length == 0) {
         fs.rmdirSync(`./notes/${owner}`);
       }
-      if (fs.readdirSync('./notes').length == 0) {
-        fs.rmdirSync('./notes');
-      }
+      this.end();
       return chalk.green(`Note has been removed correctly!`);
     } else {
       return chalk.red("Error: This note doesn't exist!");
@@ -70,8 +87,10 @@ export class NoteManagement {
   private getNote(noteTitle: string, owner: string): Note | undefined {
     if (fs.existsSync(`./notes/${owner}/${noteTitle}.json`)) {
       const data = JSON.parse(fs.readFileSync(`./notes/${owner}/${noteTitle}.json`).toString());
-      return new Note(data.title, data.body, data.color);
-    } else return undefined;
+      if (data.title && data.body && data.color) return Note.deserialize(data);
+      else return undefined;
+    }
+    return undefined;
   }
 
   /**
@@ -104,8 +123,8 @@ export class NoteManagement {
     } else {
       let notes: string = '';
       fs.readdirSync(`./notes/${owner}`).forEach((file) => {
-        const note: Note = this.getNote(file.slice(0, -5), owner)!;
-        notes += new NotePrinter(note).printTitle() + '\n';
+        const note: Note | undefined = this.getNote(file.slice(0, -5), owner);
+        if (note) notes += new NotePrinter(note).printTitle() + '\n';
       });
       return notes;
     }
@@ -121,9 +140,7 @@ export class NoteManagement {
   public removeAllUserNotes(owner: string): string {
     if (fs.existsSync(`./notes/${owner}`)) {
       fs.rmSync(`./notes/${owner}`, {recursive: true});
-      if (fs.readdirSync('./notes').length == 0) {
-        fs.rmdirSync('./notes');
-      }
+      this.end();
       return chalk.green('User have been removed succesfully!');
     } else {
       return chalk.red('Error: This user doesnt exists!');
