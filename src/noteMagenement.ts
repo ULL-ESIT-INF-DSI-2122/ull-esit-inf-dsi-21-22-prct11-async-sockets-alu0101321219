@@ -121,6 +121,9 @@ export class NoteManagement {
   public modNoteBody(noteTitle: string, owner: string, body: string): string {
     const note: Note | undefined = this.getNote(noteTitle, owner);
     if (note) {
+      if (body == note.getBody()) {
+        return chalk.yellow('Warning: This note already has this body');
+      }
       note.setBody(body);
       fs.writeFileSync(`./notes/${owner}/${noteTitle}.json`, JSON.stringify(note));
       return chalk.green('Note body has been modified correctly!');
@@ -140,6 +143,9 @@ export class NoteManagement {
   public modNoteColor(noteTitle: string, owner: string, color: Color): string {
     const note: Note | undefined = this.getNote(noteTitle, owner);
     if (note) {
+      if (color == note.getColor()) {
+        return chalk.yellow('Warning: This note already has this color');
+      }
       note.setColor(color);
       fs.writeFileSync(`./notes/${owner}/${noteTitle}.json`, JSON.stringify(note));
       return chalk.green('Note color has been modified correctly!');
