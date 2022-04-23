@@ -37,6 +37,16 @@ export class NoteManagement {
   }
 
   /**
+   * Elimina todas las notas de todos los usuarios
+   */
+  public removeAllNotes(): string {
+    if (fs.existsSync('./notes')) {
+      fs.rmSync('./notes', {recursive: true});
+    }
+    return chalk.green('All notes have been removed correctly!');
+  }
+
+  /**
    * Crea, si no existe ya, un fichero con las características de una nota.
    * @param note Nota a añadir
    * @param owner Propietario de la nota
