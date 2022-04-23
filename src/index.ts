@@ -3,6 +3,9 @@ import * as chalk from 'chalk';
 import {Note} from './note';
 import {NoteManagement} from './noteMagenement';
 
+/**
+ * Comando empleado para añadir una nota.
+ */
 yargs.command({
   command: 'add',
   describe: 'Add a new note',
@@ -40,6 +43,10 @@ yargs.command({
   },
 });
 
+/**
+ * Comando empleado para eliminar una nota o el conjunto de notas de un
+ * determinado usuario.
+ */
 yargs.command({
   command: 'remove',
   describe: 'Remove an existing note',
@@ -64,6 +71,9 @@ yargs.command({
   },
 });
 
+/**
+ * Comando para modificar el contenido de una nota.
+ */
 yargs.command({
   command: 'mod',
   describe: 'Modify a note',
@@ -102,12 +112,16 @@ yargs.command({
         }
       }
       if (typeof argv.body === 'undefined' && typeof argv.color === 'undefined') {
-        console.log(chalk.yellow('Please, type a new body or a new color to modify the note'));
+        console.log(chalk.yellow('Warning: please type a new body or a new color to modify the note'));
       }
     }
   },
 });
 
+/**
+ * Comando para listar los títulos de todas las notas de un determinado
+ * usuario.
+ */
 yargs.command({
   command: 'list',
   describe: 'List all titles of user notes',
@@ -125,6 +139,9 @@ yargs.command({
   },
 });
 
+/**
+ * Comando para leer una nota de un determinado usuario.
+ */
 yargs.command({
   command: 'read',
   describe: 'Read an user note',
