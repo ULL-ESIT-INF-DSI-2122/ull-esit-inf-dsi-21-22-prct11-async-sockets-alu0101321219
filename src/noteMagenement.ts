@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as chalk from 'chalk';
-import {Note} from "./note";
+import {Color, Note} from "./note";
 import {NotePrinter} from "./notePrinter";
 
 /**
@@ -105,6 +105,27 @@ export class NoteManagement {
     const note: Note | undefined = this.getNote(noteTitle, owner);
     if (note) {
       return new NotePrinter(note).print();
+    } else {
+      return chalk.red('Error: This note doesnt exist!');
+    }
+  }
+
+  /**
+   * Modifica, si existe, la información de una nota concreta.
+   * @param noteTitle Título de la nota a modificar
+   * @param owner Propietario de la nota
+   * @param body Nuevo cuerpo de la nota a asignar
+   * @param color Nuevo color de la nota a asignar
+   * @returns Una cadena que contiene información acerca del éxito o fracaso
+   * en la modificación de la nota.
+   */
+  public modNote(noteTitle: string, owner: string, body?: string, color?: Color): string {
+    const note: Note | undefined = this.getNote(noteTitle, owner);
+    if (note) {
+      if (body) note.setBody(body);
+      if (color) note.setColor(color);
+      fs.writeFileSync(`./notes/${owner}/${note.getTitle()}.json`, JSON.stringify(note));
+      return chalk.green('Note has been modified correctly!');
     } else {
       return chalk.red('Error: This note doesnt exist!');
     }
