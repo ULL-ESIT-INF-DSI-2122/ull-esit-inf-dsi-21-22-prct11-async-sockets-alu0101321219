@@ -1,3 +1,5 @@
+import {NoteSchema} from "./interfaces/noteSchema";
+
 /**
  * Alias de tipo empleado para definir los colores que puede
  * tener una nota.
@@ -63,5 +65,15 @@ export class Note {
    */
   public setColor(color: Color): void {
     this.color = color;
+  }
+
+  /**
+   * Crea un objeto de la clase 'Note' a través de la información
+   * del esquema de una nota (NoteSchema)
+   * @param note Esquema con información acerca de una nota.
+   * @returns Objeto de la clase 'Note'
+   */
+  public static deserialize(note: NoteSchema): Note {
+    return new Note(note.title, note.body, note.color);
   }
 }
