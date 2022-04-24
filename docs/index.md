@@ -198,3 +198,23 @@ A tener en cuenta:
 - Los __mensajes de error__ se muestran en __rojo__, mientras que los de __confirmación__ en __verde__ (tal y como se especifica en el guión de la práctica).
 - Para mapear el objeto en un fichero se emplea `JSON.stringfy(note)`, el cual es ideal para adaptar las características del mismo en un formato `.json`.
 - Los métodos empleados son __síncronos__. Esto se debe a que no sucedan errores como la creación de un directorio y de un fichero dentro del mismo al mismo tiempo.
+- Cómo podemos ver hace uso del método privadp `inicialize`, para asegurarse de que el directorio de notas esté creado.
+
+#### Método `removeNote`
+Para __eliminar una nota__ se ha implementado un método en el que se le debe especificar por parámetro el título y propietario de la misma.
+```typescript
+public removeNote(noteTitle: string, owner: string): string {
+  if (fs.existsSync(`./notes/${owner}/${noteTitle}.json`)) {
+    fs.rmSync(`./notes/${owner}/${noteTitle}.json`);
+    if (fs.readdirSync(`./notes/${owner}`).length == 0) {
+      fs.rmdirSync(`./notes/${owner}`);
+    }
+    this.end();
+    return chalk.green(`Note has been removed correctly!`);
+  } else {
+    return chalk.red("Error: This note doesn't exist!");
+  }
+}
+```
+Nuevamente, este comprueba que exista la nota a eliminar, devolviendo un mensaje de confirmación en verde o un mensaje de error en caso contrario. Para ello nuevamente empleamos `fs.existsSync` y utilizamos `rmdirSync` para borrar dicho fichero.
+- Nótese que en este método también invocamos al método __end()__ comentado en anteriores apartados, puesto que si no existen notas en el sistema no tiene sentido que tengamos el directorio `notes` vacío.
