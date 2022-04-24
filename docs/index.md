@@ -236,3 +236,16 @@ Este __método comprueba la existencia de la nota__ (accediendo a la ruta donde 
   - Nótese que para esto se emplea el método __deserialize__ mencionado anteriormente, simplificando la creación de la nota.
 - Devolviendo `undefined` en el caso de que el fichero `.json` no tenga los atributos propios de una nota.
 - Devolviendo `undefined` en el caso de acceder a una ruta inexistente.
+
+#### Método `readNote`
+La implementación de la _lectura de una nota_ es sencilla. Este simplemente utiliza el método `getNote` para comprobar la existencia de la nota a leer. Devolviendo una cadena con su información o un mensaje de error en caso contrario. Para obtener una cadena con su información hace uso de la clase `NotePrinter` comentada anteriormente.
+```typescript
+public readNote(noteTitle: string, owner: string): string {
+  const note: Note | undefined = this.getNote(noteTitle, owner);
+  if (note) {
+    return new NotePrinter(note).print();
+  } else {
+    return chalk.red('Error: This note doesnt exist!');
+  }
+}
+```
