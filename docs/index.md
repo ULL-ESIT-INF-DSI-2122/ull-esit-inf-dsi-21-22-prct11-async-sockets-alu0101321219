@@ -511,3 +511,6 @@ yargs.command({
 });
 ```
 Nuevamente, su código es de lo más sencillo. Simplemente invoca al método `readNote` de la clase `NoteManagement`.
+
+## Referencias
+- [Práctica 9 - Aplicación de procesamiento de notas de texto](https://ull-esit-inf-dsi-2122.github.io/prct09-filesystem-notes-app/)
