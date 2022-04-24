@@ -40,3 +40,77 @@ Simplemente posee __3 atributos de tipo `string`__ que representan el título, e
 ```typescript
 export type Color = 'red' | 'green' | 'blue' | 'yellow';
 ```
+
+### La clase `Note`
+Con tal de seguir una estructura de __programación orientada a objetos__ se ha diseñado una clase que representa una nota. Esta es de lo más simple, pues solo posee como atributos aquellos comentados en el apartado anterior y métodos getter y setter.
+```typescript
+export class Note {
+  /**
+   * Inicializa un objeto de la clase 'Note'
+   * @param title Título de la nota
+   * @param body Cuerpo de la nota
+   * @param color Color de la nota (rojo, verde, azul o amarillo)
+   */
+  constructor(private title: string, private body: string,
+    private color: Color) {}
+
+  /**
+   * Getter del atributo 'title'
+   * @returns Retorna el título de la nota
+   */
+  public getTitle(): string {
+    return this.title;
+  }
+
+  /**
+   * Getter del atributo 'body'
+   * @returns Retorna el cuerpo de la nota
+   */
+  public getBody(): string {
+    return this.body;
+  }
+
+  /**
+   * Getter del atributo 'color'
+   * @returns Retorna el color de la nota
+   */
+  public getColor(): Color {
+    return this.color;
+  }
+
+  /**
+   * Setter del atributo 'title'
+   * @param title Establece un nuevo título para la nota
+   */
+  public setTitle(title: string): void {
+    this.title = title;
+  }
+
+  /**
+   * Setter del atributo 'body'
+   * @param body Establece un nuevo cuerpo para la nota
+   */
+  public setBody(body: string): void {
+    this.body = body;
+  }
+
+  /**
+   * Setter del atributo 'color'
+   * @param color Establece un nuevo color para la nota
+   */
+  public setColor(color: Color): void {
+    this.color = color;
+  }
+
+  /**
+   * Crea un objeto de la clase 'Note' a través de la información
+   * del esquema de una nota (NoteSchema)
+   * @param note Esquema con información acerca de una nota.
+   * @returns Objeto de la clase 'Note'
+   */
+  public static deserialize(note: NoteSchema): Note {
+    return new Note(note.title, note.body, note.color);
+  }
+}
+```
+El único __método que más destaca__ es el último, llamado `deserialize`. Este es un __método estático__ de la clase empleado para transformar un _esquema de una nota_ en un objeto de la clase __Note__.
