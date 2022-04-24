@@ -321,3 +321,15 @@ public removeAllUserNotes(owner: string): string {
   }
 }
 ```
+
+#### Método `removeAllNotes`
+Cabe destacar el método `removeAllNotes` que no hemos mencionado anteriormente. Esto se debe a que no es utilizado a la hora de implementar los comandos en el fichero `index.js`, sino que se utiliza solo para realizar los test unitarios.
+```typescript
+public removeAllNotes(): string {
+  if (fs.existsSync('./notes')) {
+    fs.rmSync('./notes', {recursive: true});
+  }
+  return chalk.green('All notes have been removed correctly!');
+}
+```
+Como se puede observar en el código, este simpemente elimina el directorio notas y todo el contenido del mismo (aplicando nuevamente recursividad).
