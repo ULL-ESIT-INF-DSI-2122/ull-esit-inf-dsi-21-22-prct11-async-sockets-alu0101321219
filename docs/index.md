@@ -287,3 +287,23 @@ Cómo se puede observar distinguimos 3 casos:
 - Si el __color o el cuerpo de la nota que se quiere modificar es el mismo__ que esta posee actualmente simplemente devolvemos un __mensaje de aviso__.
 - Si la __nota ha sido encontrada con éxito__ y el __color__ o __cuerpo__ que se quiere modificar es __diferente al que ya tenía__ se muestra un __mensaje de éxito__.
 - Si __no se ha encontrado dicha nota__ se muestra un __mensaje de error__.
+
+#### Método `listNotes`
+Por otra parte, también contamos con un __método para imprimir el título de todas las notas de un determinado usuario__.
+```typescript
+public listNotes(owner: string): string {
+  if (!fs.existsSync(`./notes/${owner}`)) {
+    return chalk.red('Error: This user doesnt have any notes!');
+  } else {
+    let notes: string = '';
+    fs.readdirSync(`./notes/${owner}`).forEach((file) => {
+      const note: Note | undefined = this.getNote(file.slice(0, -5), owner);
+      if (note) notes += new NotePrinter(note).printTitle() + '\n';
+    });
+    return notes;
+  }
+}
+```
+Este comprueba primeramente si __dicha nota existe__, devolviendo un mensaje de error en caso contrario. Si esta existe se emplea una variable auxiliar `notes` para ir concatenando el título de cada una de las notas del directorio. Para esto se emplea `fs.readdirSync` y el método `getNote` comentado anteriormente. Así pues, si se devuelve una nota existente se construye un objeto de la clase __notePrinter__ y se invoca a su método `printTitle`.
+A tener en cuenta:
+- Se puede apreciar q para obtener la nota se eliminan los últimos 5 carácteres del nombre del fichero, los cuales corresponderían con el nombre de la extensión (`.json`).
