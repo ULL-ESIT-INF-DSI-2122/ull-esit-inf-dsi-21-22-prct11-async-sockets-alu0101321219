@@ -333,3 +333,181 @@ public removeAllNotes(): string {
 }
 ```
 Como se puede observar en el código, este simpemente elimina el directorio notas y todo el contenido del mismo (aplicando nuevamente recursividad).
+
+### Menú de la práctica (fichero `index.ts`)
+Para el desarrollo del menú de la práctica se ha hecho uso del paquete `yargs` y de la clase `NoteManagement` anteriormente explicada. Así pues, se han implementado los siguientes comandos:
+- __El comando `add`__: para añadir una nota
+- __El comando `remove`__: para eliminar una nota o el conjunto de notas de un determinado usuario
+- __El comando `mod`__: para modificar el contenido de una nota
+- __El comando `list`__: para listar todos los títulos de las notas de un determinado usuario
+- __El comando `read`__: para leer una nota
+
+#### El comando `add`
+Este debe recibir si o si por parámetro todas las características de la nota a añadir, incluyendo el nombre del propietario de la misma.
+```typescript
+yargs.command({
+  command: 'add',
+  describe: 'Add a new note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+    body: {
+      describe: 'Note body',
+      demandOption: true,
+      type: 'string',
+    },
+    color: {
+      describe: 'Note color',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string' &&
+      typeof argv.body === 'string' && typeof argv.color === 'string') {
+      if (argv.color == 'red' || argv.color == 'green' || argv.color == 'blue' || argv.color == 'yellow') {
+        console.log(new NoteManagement().addNote(new Note(argv.title, argv.body, argv.color), argv.user));
+      } else {
+        console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
+      }
+    }
+  },
+});
+```
+Como podemos observar, ismplemente hace uso del método `addNote` de la clase `NoteManagement` mencionado anteriormente. Nótese que se ha comprobado que el color de la misma es una cadena que corresponde con los valores que puede tener el color de la nota, devolviendo un mensaje de error en caso contrario.
+
+#### El comando `remove`
+Este comando cuenta con un parámetro opcional: la nota a eliminar. Lo que sí se debe especificar es el nombre del usuario.
+```typescript
+yargs.command({
+  command: 'remove',
+  describe: 'Remove an existing note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      console.log(new NoteManagement().removeNote(argv.title, argv.user));
+    } else if (typeof argv.user == 'string' && typeof argv.title === 'undefined') {
+      console.log(new NoteManagement().removeAllUserNotes(argv.user));
+    }
+  },
+});
+```
+Como podemos observar, en el caso de introducir ambos parámetros se invoca al método `removeNote` de la clase `NoteManagement`. En el caso de únicamente introducir el nombre de usuario, se eliminarían todos las notas del mismo (utilizando para ello el método `removeAllNotes` de la clase `NoteManagement`). Nótese que como estos devuelve una cadena con un mensaje de éxito o error simplemente nos limitamos a mostrarla por pantalla.
+
+#### El comando `mod`
+Este comando cuenta con 2 parámetros opcionales: el nuevo cuerpo y el nuevo color a introducir.
+```typescript
+yargs.command({
+  command: 'mod',
+  describe: 'Modify a note',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+    body: {
+      describe: 'New body',
+      demandOption: false,
+      type: 'string',
+    },
+    color: {
+      describe: 'New color',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      if (typeof argv.body === 'string') {
+        console.log(new NoteManagement().modNoteBody(argv.title, argv.user, argv.body));
+      }
+      if (typeof argv.color === 'string') {
+        if (argv.color == 'red' || argv.color == 'green' || argv.color == 'blue' || argv.color == 'yellow') {
+          console.log(new NoteManagement().modNoteColor(argv.title, argv.user, argv.color));
+        } else {
+          console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
+        }
+      }
+      if (typeof argv.body === 'undefined' && typeof argv.color === 'undefined') {
+        console.log(chalk.yellow('Warning: please type a new body or a new color to modify the note'));
+      }
+    }
+  },
+});
+```
+Como se puede observar en el código, si está definido el campo `body` con una string se empleará el método `modeNoteBody` para modificar el cuerpo de la misma nota. De igual manera, se comprueba q esté igualmente definido el campo `color` para modificar el color de la misma. En este caso comprobamos otra vez q dicha cadena que representa el color sea uno de los colores que permiten instanciar un objeto de la clase `Note`.
+Por otro lado, se puede observar que en el caso de __no establecer ningún color ni cuerpo nuevo__ para modificar emitieremos un __mensaje de warning__.
+
+#### El comando `list`
+Para el comando `list` se debe especificar obligatoriamente el nombre del usuario a listar (sus notas).
+```typescript
+yargs.command({
+  command: 'list',
+  describe: 'List all titles of user notes',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string') {
+      console.log(new NoteManagement().listNotes(argv.user));
+    }
+  },
+});
+```
+Su código es de los más sencillos, simplemente invoca al método `listNotes` de la clase `NoteManagement`.
+
+#### El comando `read`
+Este comando recibe 2 parámetro obligatorios: el nombre de la nota a leer y el propietario de la misma.
+```typescript
+yargs.command({
+  command: 'read',
+  describe: 'Read an user note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      console.log(new NoteManagement().readNote(argv.title, argv.user));
+    }
+  },
+});
+```
+Nuevamente, su código es de lo más sencillo. Simplemente invoca al método `readNote` de la clase `NoteManagement`.
