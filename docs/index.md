@@ -1,37 +1,18 @@
-## Welcome to GitHub Pages
+# DSI - Práctica 9: Aplicación de procesamiento de notas de texto
+En esta [github page](https://pages.github.com/) se describe la realización de la [práctica 9](https://ull-esit-inf-dsi-2122.github.io/prct09-filesystem-notes-app/) de la asignatura "Desarrollo de Sistemas Informáticos".
 
-You can use the [editor on GitHub](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## Acerca de
+- Universidad de La Laguna
+  - Grado en Ingeniería Informática, 3º Curso, 2º Cuatrimestre
+  - Desarrollo de Sistemas Informáticos
+- Autor:
+  - Adrián González Galván
+  - alu0101321219@ull.edu.es
+  - Cuenta de GitHub: [alu0101321219](https://github.com/alu0101321219)
+- Fecha de entrega: 24/04/2022
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+## Información
+Esta práctica consiste en realizar una __aplicación de procesamiento de notas de texto__. Así pues, esta misma permitirá añadir, modificar, eliminar, listar y leer las notas de un usuario concreto. Estas notas serán almacenadas en ficheros con extensión '.json' en el sistema de ficheros de la máquina que ejecute la aplicación.
+Para el __desarrollo de esta práctica__ hacemos uso fundamentalmente de __2 paquetes__:
+- El paquete `chalk`, que permite formatear el color de un texto (entre otras cosas).
+- El paquete `yargs`, que permite implementar una linea de comandos para ejecutar código (entre otras cosas).
