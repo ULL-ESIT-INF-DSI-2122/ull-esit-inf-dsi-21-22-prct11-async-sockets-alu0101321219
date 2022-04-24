@@ -16,3 +16,27 @@ Esta práctica consiste en realizar una __aplicación de procesamiento de notas 
 Para el __desarrollo de esta práctica__ hacemos uso fundamentalmente de __2 paquetes__:
 - El paquete `chalk`, que permite formatear el color de un texto (entre otras cosas).
 - El paquete `yargs`, que permite implementar una linea de comandos para ejecutar código (entre otras cosas).
+
+## Desarrollo de la práctica
+### La interfaz `NoteSchema`
+Como la información de las notas va a ser leída a partir de ficheros `.json` he decidido crear una __interfaz esquema__ que represente la estructura de datos de una simple nota. El contenido de esta es sumamente sencillo:
+```typescript
+export interface NoteSchema {
+  /**
+   * Título de la nota.
+   */
+  title: string,
+  /**
+   * Cuerpo/contenido de la nota.
+   */
+  body: string,
+  /**
+   * Color de la nota (rojo, verde, azul o amarillo)
+   */
+  color: Color
+}
+```
+Simplemente posee __3 atributos de tipo `string`__ que representan el título, el cuerpo y el color de la nota. Nótese que para el color se ha empleado un _alias de tipo_, con el objetivo de que solo pueda tomar los valores 'red', 'blue', 'yellow' y 'green' (los colores que se especifica en el guión que pueden tomar las notas).
+```typescript
+export type Color = 'red' | 'green' | 'blue' | 'yellow';
+```
