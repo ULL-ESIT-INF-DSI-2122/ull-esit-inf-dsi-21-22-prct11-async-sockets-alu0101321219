@@ -153,3 +153,48 @@ export class NotePrinter {
 }
 ```
 Como se puede observar, se han implementado __2 métodos__: uno para imprimir el título de las notas y otro para imprimir su información de manera completa. Su funcionamiento es sencillo, simplemente hace uso de un `switch` para devolver una cadena de un color u otro dependiendo del valor del atributo `color` de la misma nota.
+
+### La clase `NoteManagement`
+La __última clase creada__ es una para llevar a cabo la _gestión de las notas_ a través del módulo `fs` (File System) que nos ofrece `node.js`. Dado a que su código es algo extenso, este será explicado por partes.
+#### Constructor
+El constructor de la clase se limita a __crear el directorio donde se almacenarán todas las notas__ (el directorio `notes`), si es que no existe. Para ello llama a un método privado `inicialize`. El sentido de utilizar este método privado será explicado más adelante.
+```typescript
+constructor() {
+    this.inicialize();
+}
+private inicialize(): void {
+    if (!fs.existsSync('./notes')) {
+      fs.mkdirSync('./notes');
+    }
+}
+```
+#### Método `end`
+De la misma manera, también se creó un __método privado `end`__ que borrase el directorio de notas en el caso de que este se encontrase vacío.
+```typescript
+private end(): void {
+    if (fs.readdirSync('./notes').length == 0) {
+      fs.rmdirSync('./notes');
+    }
+}
+```
+#### Método `addNote`
+Para __escribir una nota en el directorio de notas__ se ha implementado un método al que se le debe pasar por parámetro un objeto de la clase `Note` y una cadena con el nombre del propietario de la misma.
+```typescript
+public addNote(note: Note, owner: string): string {
+  this.inicialize();
+  if (!fs.existsSync(`./notes/${owner}`)) {
+    fs.mkdirSync(`./notes/${owner}`);
+  }
+  if (fs.existsSync(`./notes/${owner}/${note.getTitle()}.json`)) {
+    return chalk.red('Error: This note already exists!');
+  } else {
+    fs.writeFileSync(`./notes/${owner}/${note.getTitle()}.json`, JSON.stringify(note));
+    return chalk.green(`Note has been added correctly!`);
+  }
+}
+```
+Este método comprueba si existe el directorio del usuario con `fs.existsSync`, creándolo en caso contrario. Asimismo, si la nota ya está creada devuelve una cadena con un mensaje de error y en caso contrario la crea y devuelve un mensaje de confirmación.
+A tener en cuenta:
+- Los __mensajes de error__ se muestran en __rojo__, mientras que los de __confirmación__ en __verde__ (tal y como se especifica en el guión de la práctica).
+- Para mapear el objeto en un fichero se emplea `JSON.stringfy(note)`, el cual es ideal para adaptar las características del mismo en un formato `.json`.
+- Los métodos empleados son __síncronos__. Esto se debe a que no sucedan errores como la creación de un directorio y de un fichero dentro del mismo al mismo tiempo.
