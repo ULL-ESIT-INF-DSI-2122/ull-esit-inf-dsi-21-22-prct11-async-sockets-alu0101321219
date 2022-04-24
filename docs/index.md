@@ -307,3 +307,17 @@ public listNotes(owner: string): string {
 Este comprueba primeramente si __dicha nota existe__, devolviendo un mensaje de error en caso contrario. Si esta existe se emplea una variable auxiliar `notes` para ir concatenando el título de cada una de las notas del directorio. Para esto se emplea `fs.readdirSync` y el método `getNote` comentado anteriormente. Así pues, si se devuelve una nota existente se construye un objeto de la clase __notePrinter__ y se invoca a su método `printTitle`.
 A tener en cuenta:
 - Se puede apreciar q para obtener la nota se eliminan los últimos 5 carácteres del nombre del fichero, los cuales corresponderían con el nombre de la extensión (`.json`).
+
+#### Método `removeAllUserNotes`
+Por último, cabe resaltar la implementación de un __método__ para __eliminar todas y cada una de las notas de un determinado usuario__. Este simplemente comprueba que dicho directorio de usuario existe, eliminando recursivamente todos los archivos. En caso contrario devuelve nuevamente un mensaje de error.
+```typescript
+public removeAllUserNotes(owner: string): string {
+  if (fs.existsSync(`./notes/${owner}`)) {
+    fs.rmSync(`./notes/${owner}`, {recursive: true});
+    this.end();
+    return chalk.green('User have been removed succesfully!');
+  } else {
+    return chalk.red('Error: This user doesnt exists!');
+  }
+}
+```
