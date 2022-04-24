@@ -114,3 +114,42 @@ export class Note {
 }
 ```
 El único __método que más destaca__ es el último, llamado `deserialize`. Este es un __método estático__ de la clase empleado para transformar un _esquema de una nota_ en un objeto de la clase __Note__.
+
+### La clase `NotePrinter`
+Para llevar a cabo la __impresión de las notas por pantalla__ decidí crear una clase `NotePrinter`. Esta básicamente recibe un objeto de la clase `Note` y devuelve una cadena con las características del mismo empleado el paquete `chalk` para colorearlas.
+```typescript
+export class NotePrinter {
+  /**
+   * Inicializa un objeto de la clase 'NotePrinter'
+   * @param note Objeto de la clase 'Note'
+   */
+  constructor(private note: Note) {}
+
+  /**
+   * Devuelve una cadena con el título de la nota formateado
+   * con el color de la misma.
+   */
+  public printTitle(): string {
+    switch (this.note.getColor()) {
+      case 'red': return chalk.red(this.note.getTitle());
+      case 'green': return chalk.green(this.note.getTitle());
+      case 'blue': return chalk.blue(this.note.getTitle());
+      case 'yellow': return chalk.yellow(this.note.getTitle());
+    }
+  }
+
+  /**
+   * Devuelve una cadena con la información de la nota formateada
+   * con el color de la misma.
+   */
+  public print(): string {
+    switch (this.note.getColor()) {
+      case 'red': return this.printTitle() + '\n' + chalk.red.inverse(this.note.getBody() + '\n');
+      case 'green': return this.printTitle() + '\n' + chalk.green.inverse(this.note.getBody() + '\n');
+      case 'blue': return this.printTitle() + '\n' + chalk.blue.inverse(this.note.getBody() + '\n');
+      case 'yellow': return this.printTitle() + '\n' + chalk.yellow.inverse(this.note.getBody() + '\n');
+    }
+  }
+}
+```
+Como se puede observar, se han implementado __2 métodos__: uno para imprimir el título de las notas y otro para imprimir su información de manera completa. Su funcionamiento es sencillo, simplemente hace uso de un `switch` para devolver una cadena de un color u otro dependiendo del valor del atributo `color` de la misma nota.
