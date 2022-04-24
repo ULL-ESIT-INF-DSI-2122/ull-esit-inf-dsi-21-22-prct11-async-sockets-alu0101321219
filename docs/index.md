@@ -218,3 +218,21 @@ public removeNote(noteTitle: string, owner: string): string {
 ```
 Nuevamente, este comprueba que exista la nota a eliminar, devolviendo un mensaje de confirmación en verde o un mensaje de error en caso contrario. Para ello nuevamente empleamos `fs.existsSync` y utilizamos `rmdirSync` para borrar dicho fichero.
 - Nótese que en este método también invocamos al método __end()__ comentado en anteriores apartados, puesto que si no existen notas en el sistema no tiene sentido que tengamos el directorio `notes` vacío.
+
+#### Método `getNote`
+Para comprobar la existencia de una nota en una determinada ruta y construir el objeto que la representa se creó el método __getNote__.
+```typescript
+private getNote(noteTitle: string, owner: string): Note | undefined {
+  if (fs.existsSync(`./notes/${owner}/${noteTitle}.json`)) {
+    const data = JSON.parse(fs.readFileSync(`./notes/${owner}/${noteTitle}.json`).toString());
+    if (data.title && data.body && data.color) return Note.deserialize(data);
+    else return undefined;
+  }
+  return undefined;
+}
+```
+Este __método comprueba la existencia de la nota__ (accediendo a la ruta donde debería ubicarse):
+- Devolviendo y creando un objeto de la clase `Note` en caso de que exista.
+  - Nótese que para esto se emplea el método __deserialize__ mencionado anteriormente, simplificando la creación de la nota.
+- Devolviendo `undefined` en el caso de que el fichero `.json` no tenga los atributos propios de una nota.
+- Devolviendo `undefined` en el caso de acceder a una ruta inexistente.
