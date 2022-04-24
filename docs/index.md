@@ -249,3 +249,41 @@ public readNote(noteTitle: string, owner: string): string {
   }
 }
 ```
+
+#### Métodos `modeNoteBody` y `modeNoteColor`
+Para la modificación de una nota también se __hace uso del método `getNote`__.
+```typescript
+public modNoteBody(noteTitle: string, owner: string, body: string): string {
+  const note: Note | undefined = this.getNote(noteTitle, owner);
+  if (note) {
+    if (body == note.getBody()) {
+      return chalk.yellow('Warning: This note already has this body');
+    }
+    note.setBody(body);
+    fs.writeFileSync(`./notes/${owner}/${noteTitle}.json`, JSON.stringify(note));
+    return chalk.green('Note body has been modified correctly!');
+  } else {
+    return chalk.red('Error: This note doesnt exist!');
+  }
+}
+```
+La __estructura de ambos métodos es similar__...
+```typescript
+public modNoteColor(noteTitle: string, owner: string, color: Color): string {
+  const note: Note | undefined = this.getNote(noteTitle, owner);
+  if (note) {
+    if (color == note.getColor()) {
+      return chalk.yellow('Warning: This note already has this color');
+    }
+    note.setColor(color);
+    fs.writeFileSync(`./notes/${owner}/${noteTitle}.json`, JSON.stringify(note));
+    return chalk.green('Note color has been modified correctly!');
+  } else {
+    return chalk.red('Error: This note doesnt exist!');
+  }
+}
+```
+Cómo se puede observar distinguimos 3 casos:
+- Si el __color o el cuerpo de la nota que se quiere modificar es el mismo__ que esta posee actualmente simplemente devolvemos un __mensaje de aviso__.
+- Si la __nota ha sido encontrada con éxito__ y el __color__ o __cuerpo__ que se quiere modificar es __diferente al que ya tenía__ se muestra un __mensaje de éxito__.
+- Si __no se ha encontrado dicha nota__ se muestra un __mensaje de error__.
