@@ -1,12 +1,12 @@
-# Práctica 9 - Aplicación de procesamiento de notas de texto
-Este repositorio contiene el desarrollo de la "[Práctica 9 - Aplicación de procesamiento de notas de texto](https://ull-esit-inf-dsi-2122.github.io/prct06-generics-solid/)".
+# Práctica 10 - Sistema de ficheros y creación de procesos en Node.js
+Este repositorio contiene el desarrollo de la "[Práctica 10 - Sistema de ficheros y creación de procesos en Node.js](https://ull-esit-inf-dsi-2122.github.io/prct10-async-fs-process/)".
 
 ## Datos generales
 - Universidad de la Laguna
 - Grado en Ingeniería Informática 
 - Curso nº 3, segundo cuatrimestre
 - Asignatura: Desarrollo en Sistemas Informáticos
-- Fecha de entrega: 24/03/2022
+- Fecha de entrega: 01/05/2022
 - Autor:
   - Adrián González Galván
   - alu0101321219@ull.edu.es
@@ -17,10 +17,3 @@ Este repositorio se ha diseñado de acorde a la [estructura básica de proyecto]
 - En la carpeta `./typedoc` podemos encontrar la documentación generada en código 'html' por la herramienta 'typedoc'.
 - En la carpeta `./src` podemos encontrar todo el código fuente desarrollado.
 - En la carpeta `./tests` podemos encontrar el código de las pruebas unitarias desarrolladas.
-
-## Información acerca del cubrimiento
-[![Test](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/actions/workflows/node.js.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/actions/workflows/node.js.yml)
-
-[![Coveralls](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/actions/workflows/coveralls.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219/actions/workflows/coveralls.yml)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ULL-ESIT-INF-DSI-2122_ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ULL-ESIT-INF-DSI-2122_ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219)
