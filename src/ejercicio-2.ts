@@ -1,14 +1,29 @@
 import {spawn} from 'child_process';
 import * as fs from 'fs';
 
+/**
+ * Clase que implementa métodos para contar el número de ocurrencias
+ * de una palabra dentro de un determinado fichero de texto
+ */
 export class CountFileWords {
+  /**
+   * Inicializa un objeto de la clase 'CountFileWords'
+   * @param filePath Ruta del fichero a examinar
+   * @param word Palabra a contar dentro del mismo fichero
+   */
   constructor(private filePath: string, private word: string) {}
 
-  public method1(): number {
-    let numberOfWords: number = 0;
+  /**
+   * Implementa el patrón _callback_ para contar el número de
+   * palabras del fichero. Para su funcionalidad hace uso del método `pipe` de
+   * un `Stream` para poder redigirir la salida de un comando hacia otro.
+   * @param callback Patrón callback que contiene una cadena con el error a
+   * ejecutar y el número de palabras a contar, ambos podrían estar no definidos.
+   */
+  public method1(callback: (err: string | undefined, numberOfWords: number | undefined) => void): void {
     fs.access(this.filePath, fs.constants.F_OK, (err) => {
       if (err) {
-        throw new Error(`File ${this.filePath} does not exist`);
+        callback(`ERROR: ${err.message}`, undefined);
       } else {
         const cat = spawn('cat', [this.filePath]);
         const grep = spawn('grep', [this.word]);
@@ -20,16 +35,15 @@ export class CountFileWords {
         });
 
         grep.on('close', () => {
-          console.log(grepOutput);
           const wordRE = new RegExp(this.word, 'g');
           if (grepOutput.match(wordRE)?.length) {
-            numberOfWords = grepOutput.match(wordRE)?.length!;
-            console.log(`numberOfWords = ${numberOfWords}`);
+            callback(undefined, grepOutput.match(wordRE)?.length!);
+          } else {
+            callback('ERROR: There is no ocurrences...', undefined);
           }
         });
       }
     });
-    return numberOfWords;
   }
 }
 
@@ -38,9 +52,11 @@ if (process.argv.length < 4) {
   console.log('Please, provide a "filename" and a "word to search"');
 } else {
   const countFileWords: CountFileWords = new CountFileWords(process.argv[2], process.argv[3]);
-  try {
-    console.log(countFileWords.method1());
-  } catch (error) {
-    console.log(error);
-  }
+  countFileWords.method1((err, numberOfWords) => {
+    if (err) {
+      console.log(err);
+    } else if (numberOfWords) {
+      console.log(numberOfWords);
+    }
+  });
 }
