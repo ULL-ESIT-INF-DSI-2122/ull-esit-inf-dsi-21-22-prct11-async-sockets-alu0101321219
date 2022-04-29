@@ -69,6 +69,40 @@ Como se puede observar, este hace uso del __patron callback__ con el objetivo de
 
 Como se puede observar, para __contar el número de ocurrencias__ se ha hecho uso de una __expresión regular__. Así pues, con el operador `match` propio de una `string` capturamos el número de ocurrencias de dicha expresión regular dentro de nuestra salida del comando `grep`.
 
+El __segundo método a incluir__ presenta el siguiente código:
+```typescript
+public method2(callback: (err: string | undefined, numberOfWords: number | undefined) => void): void {
+    fs.access(this.filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else {
+        const cat = spawn('cat', [this.filePath]);
+        const grep = spawn('grep', [this.word]);
+        cat.stdout.on('data', (piece) => {
+          grep.stdin.write(piece);
+        });
+
+        cat.on('close', () => {
+          grep.stdin.end();
+          let grepOutput = '';
+          grep.stdout.on('data', (piece) => {
+            grepOutput += piece;
+          });
+          grep.on('close', () => {
+            const wordRE = new RegExp(this.word, 'g');
+            if (grepOutput.match(wordRE)?.length) {
+              callback(undefined, grepOutput.match(wordRE)?.length!);
+            } else {
+              callback('ERROR: There is no ocurrences...', undefined);
+            }
+          });
+        });
+      }
+    });
+  }
+```
+Como se observa, en este no se hace uso del método `pipe`, si no que se escribe en el comando `grep` la salida de cada una de las partes del comando `cat` a través de  `grep.stdin.write(piece)`. Así pues, al finalizar el comando `cat` (`cat.on(close)`) se finaliza también la escritura del comando `grep` (`grep.stind.end()`). El resto del procedimiento es idéntico al del método anterior.
+
 Por otro lado, se ha hecho uso del __paquete `yargs`__ para obtener por comandos tanto la ruta del fichero a utilizar, como la palabra a buscar y el método a utilizar.
 ```typescrcipt
 yargs.command({
