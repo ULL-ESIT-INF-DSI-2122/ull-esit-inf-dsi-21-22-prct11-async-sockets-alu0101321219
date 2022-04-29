@@ -83,17 +83,3 @@ export class CountFileWords {
     });
   }
 }
-
-
-if (process.argv.length < 4) {
-  console.log('Please, provide a "filename" and a "word to search"');
-} else {
-  const countFileWords: CountFileWords = new CountFileWords(process.argv[2], process.argv[3]);
-  countFileWords.method2((err, numberOfWords) => {
-    if (err) {
-      console.log(err);
-    } else if (numberOfWords) {
-      console.log(numberOfWords);
-    }
-  });
-}
