@@ -75,4 +75,28 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'read',
+  describe: 'Show a file content',
+  builder: {
+    filePath: {
+      describe: 'File path to show',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.filePath === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.readFie(argv.filePath, (err, data) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else if (data) {
+          console.log(chalk.green(`${argv.filePath} content:\n`) + `${data}`);
+        }
+      });
+    }
+  },
+});
+
 yargs.parse();

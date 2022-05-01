@@ -60,4 +60,21 @@ export class CommandWrapper {
       }
     });
   }
+
+  /**
+   * Lee el contenido de un fichero..
+   * @param path Ruta del fichero a leer
+   * @param callback Patrón callback que permite devolver un error en el caso
+   * de no poder leer el fichero o el conjunto de datos del mismo fichero en
+   * caso de éxito.
+   */
+  public readFie(path: string, callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.readFile(path, (err, data) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else if (data) {
+        callback(undefined, data.toString());
+      }
+    });
+  }
 }
