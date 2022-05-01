@@ -12,7 +12,7 @@ yargs.command({
   builder: {
     file: {
       describe: 'File path',
-      demmandOption: true,
+      demandOption: true,
       type: 'string',
     },
     word: {
@@ -54,16 +54,6 @@ yargs.command({
         default: {
           console.log(chalk.yellow('WARNING: There is only 2 methods available (1 and 2)!!'));
         }
-      }
-    } else {
-      if (typeof argv.file === 'undefined') {
-        console.log(chalk.red('ERROR: You have to specify a file!!'));
-      }
-      if (typeof argv.word === 'undefined') {
-        console.log(chalk.red('ERROR: You have to specify a word!!'));
-      }
-      if (typeof argv.method === 'undefined') {
-        console.log(chalk.red('ERROR: You have to specify a method!!'));
       }
     }
   },
