@@ -77,4 +77,36 @@ export class CommandWrapper {
       }
     });
   }
+
+  /**
+   * Elimina, si existe, un fichero cuya ruta se introduce por parámetro.
+   * @param path Ruta del fichero a eliminar
+   * @param callback Patrón callback que permite devolver un error en caso
+   * de que no se haya podido eliminar el fichero correctamente.
+   */
+  public removeFile(path: string, callback: (err: string | undefined) => void): void {
+    fs.rm(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
+
+  /**
+   * Elimina, si existe, un directorio cuya ruta se introduce por parámetro.
+   * @param path Ruta del directorio a eliminar
+   * @param callback Patrón callback que permite devolver un error en caso
+   * de que no se haya podido eliminar el directorio correctamente.
+   */
+  public removeDir(path: string, callback: (err: string | undefined) => void): void {
+    fs.rmdir(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
 }

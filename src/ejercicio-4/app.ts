@@ -99,4 +99,52 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'rmFile',
+  describe: 'Remove a file',
+  builder: {
+    path: {
+      describe: 'File path to remove',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.path === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.removeFile(argv.path, (err) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else {
+          console.log(chalk.green(`'${argv.path}' has been deleted succesfully!!`));
+        }
+      });
+    }
+  },
+});
+
+yargs.command({
+  command: 'rmDir',
+  describe: 'Remove a directory',
+  builder: {
+    path: {
+      describe: 'Directory path to remove',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.path === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.removeDir(argv.path, (err) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else {
+          console.log(chalk.green(`'${argv.path}' has been deleted succesfully!!`));
+        }
+      });
+    }
+  },
+});
+
 yargs.parse();
