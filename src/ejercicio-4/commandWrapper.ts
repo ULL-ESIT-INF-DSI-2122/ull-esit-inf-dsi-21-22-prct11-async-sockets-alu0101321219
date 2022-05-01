@@ -27,4 +27,14 @@ export class CommandWrapper {
       }
     });
   }
+
+  public createDir(path: string, callback: (err: string | undefined) => void): void {
+    fs.mkdir(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
 }

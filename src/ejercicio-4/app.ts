@@ -27,4 +27,28 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'mkdir',
+  describe: 'Create a directory',
+  builder: {
+    path: {
+      describe: 'Directory path',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.path === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.createDir(argv.path, (err) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else {
+          console.log(chalk.green(`'${argv.path}' successfully created !!`));
+        }
+      });
+    }
+  },
+});
+
 yargs.parse();
