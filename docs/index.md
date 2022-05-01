@@ -170,5 +170,58 @@ yargs.command({
 ```
 Como se puede observar, el __nombre del comando es `countWords`__ y este recibe los 3 parámetros que antes hemos mencionado. Así pues, dependiendo del método especificado llama al correspondiente método de nuestra clase y muestra por consola el conteo realizado, o en su defecto el error producido. Para ello nótese que se hace uso del paquete `chalk`, el cual nos permite mostrar los mensajes de éxito en verde y los de fallo en rojo.
 
+## Ejercicio 3
+
+### Descripción
+A partir de la aplicación de procesamiento de notas desarrollada en la Práctica 9, desarrolle una aplicación que reciba desde la línea de comandos el nombre de un usuario de la aplicación de notas, así como la ruta donde se almacenan las notas de dicho usuario. Puede gestionar el paso de parámetros desde la línea de comandos haciendo uso de `yargs`. La aplicación a desarrollar deberá controlar los cambios realizados sobre todo el directorio especificado al mismo tiempo que dicho usuario interactúa con la aplicación de procesamiento de notas. Nótese que no hace falta modificar absolutamente nada en la aplicación de procesamiento de notas. Es una aplicación que se va a utilizar para provocar cambios en el sistema de ficheros.
+Para ello, utilice la función `watch` y no la función `watchFile`, dado que esta última es más ineficiente que la primera. La función `watch` devuelve un objeto `Watcher`, que también es un objeto `EventEmitter`.
+Con cada cambio detectado en el directorio observado, el programa deberá indicar si se ha añadido, modificado o borrado una nota, además de indicar el nombre concreto del fichero creado, modificado o eliminado para alojar dicha nota.
+### Solución
+Para __hallar la solución de este ejercicio__ se ha creado la clase `noteWatcher`. Dicha clase, recibe y tiene como único atributo el nombre del usuario del cual se quieren vigilar sus respectivas notas.
+```typescript
+  constructor(private user: string) {}
+```
+Para desarrollar la funcionalidad que se requiere en la práctica, esta clase tiene un método llamado `initialize` que comienza a realizar la vigilancia del respectivo directorio de notas del usuario.
+```typescript
+public initialize(callback: (err: string | undefined, event: string | undefined) => void): void {
+    fs.access(`./notes/${this.getUser()}`, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else {
+        fs.watch(`./notes/${this.getUser()}`, (eventType, fileName) => {
+          if (eventType === 'rename') {
+            fs.readFile(`./notes/${this.getUser()}/${fileName}`, (err, data) => {
+              if (err) {
+                callback(undefined, chalk.green(`The note with title `) + `${fileName.slice(0, -5)}` + chalk.green(" was deleted!!"));
+              } else {
+                callback(undefined, chalk.green('A note was added!!\n') + data.toString());
+              }
+            });
+          } else if (eventType === 'change') {
+            fs.readFile(`./notes/${this.getUser()}/${fileName}`, (err, data) => {
+              if (err) callback(chalk.red(`ERROR: ${err.message}`), undefined);
+              else callback(undefined, chalk.green('A note was modified!!\n') + data.toString());
+            });
+          }
+        });
+      }
+    });
+  }
+```
+Cómo se puede observar, este checkea inicialmente la _existencia del fichero del usuario a vigilar_ haciendo uso de `fs.access`. Seguidamennte, si no se mitió ningún error se pasa a hacer uso ahora así de `fs.watch`. Este recibe como primer parámetro la ruta del directorio a vigilar, la cual es en este caso el directorio de notas del usuario introducido. Asimismo, como segundo parametor recibe un _callback_ con 2 parámetros: el primero indica el tipo de evento emitido, mientras que el segundo el nombre fichero modificado, borrado o añadido.
+1. En el caso de haberse emitido un __evento__ de tipo `rename`:
+  - Se comprueba le existencia del fichero o nota del usuario, pueste esta puede haber sido añadida o eliminada.
+    - En el caso de haber sido eliminada, el `fs.readFile` emitiría un error, el cual podemos recoger en el atributo `err` de su mismo _callback_. Actualizando por ello los parámetros del callback del método principal con un mensaje que indique la eliminación de la nota.
+    - En el caso de haber sido creada podreemos leer dicha nota y mostrar los datos de la misma con `data.toString()`.
+2. En el caso de haberse emitido un __evento__ de tipo `change`.
+  - Se vuelve a emplear `readFile` para mostrar el contenido de la nota, si es que esta existe, concantenaod le contenido de la misma en el mensaje de nuevo usando `data.toString()`.
+
+### Preguntas
+- __¿Qué evento emite el objeto Watcher cuando se crea un nuevo fichero en el directorio observado?__ Emite un evento del tipo `rename`.
+- __¿Y cuando se elimina un fichero existente?__ Un evento cuyo tipo es también `rename`.
+- __¿Y cuando se modifica?__ Un evento del tipo `change`.
+- __¿Cómo haría para mostrar, no solo el nombre, sino también el contenido del fichero, en el caso de que haya sido creado o modificado?__ Esto ha sido realizado y explicado anteriormente en la misma práctica. Para realizar esto básicamente hace uso del metodo `fs.readFile`, el cual nos proporciona en su _callback_ una variable `data` donde se almacena el bufer del contenido leído.
+- __¿Cómo haría para que no solo se observase el directorio de un único usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicación de notas?__ Realizar esto es tan sencillo como cambiar la ruta de los ficheros a vigilar, en este caso todo el directorio `./notes`, y activar la opción de recursividad del mismo `fs.watch`, la cual hace que la vigilancia aplique a todos los subdirectorios del directorio especificado. La cabecera del `fs.watch` quedaría de la siguiente manera: `fs.watch("./notes/${this.getUser()}", {recursive: true}, (eventType, fileName)`. El problema de esta opción es que, según se especifica en la página de node, esta únicamente sirve para los sistemas de Windows y Linux. Por lo que a consecuente, no la podemos implementar en esta práctica puesto que utilizamos `Linux`.
+
 ## Referencias
 - [Práctica 10 - Sistema de ficheros y creación de procesos en Node.js](https://ull-esit-inf-dsi-2122.github.io/prct10-async-fs-process/)
