@@ -41,14 +41,11 @@ export class NoteWatcher {
       } else {
         fs.watch(`./notes/${this.getUser()}`, (eventType, fileName) => {
           if (eventType === 'rename') {
-            fs.access(`./notes/${this.getUser()}/${fileName}`, fs.constants.F_OK, (err) => {
+            fs.readFile(`./notes/${this.getUser()}/${fileName}`, (err, data) => {
               if (err) {
                 callback(undefined, chalk.green(`The note with title `) + `${fileName.slice(0, -5)}` + chalk.green(" was deleted!!"));
               } else {
-                fs.readFile(`./notes/${this.getUser()}/${fileName}`, (err, data) => {
-                  if (err) callback(chalk.red(`ERROR: ${err.message}`), undefined);
-                  else callback(undefined, chalk.green('A note was added!!\n') + data.toString());
-                });
+                callback(undefined, chalk.green('A note was added!!\n') + data.toString());
               }
             });
           } else if (eventType === 'change') {
