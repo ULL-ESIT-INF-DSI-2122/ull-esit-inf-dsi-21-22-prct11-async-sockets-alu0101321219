@@ -147,4 +147,34 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'copy',
+  describe: 'Copy a directory or file in other path',
+  builder: {
+    origin: {
+      describe: 'Origin path',
+      demandOption: true,
+      type: 'string',
+    },
+    dest: {
+      describe: 'Destination path',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.origin === 'string' && typeof argv.dest === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.copy(argv.origin, argv.dest, (err) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else {
+          console.log(chalk.green('Copy has been made succesfully!!'));
+        }
+      });
+    }
+  },
+});
+
+
 yargs.parse();

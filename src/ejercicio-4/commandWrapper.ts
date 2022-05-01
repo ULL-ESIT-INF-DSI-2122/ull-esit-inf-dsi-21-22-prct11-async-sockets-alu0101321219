@@ -109,4 +109,14 @@ export class CommandWrapper {
       }
     });
   }
+
+  public copy(originPath: string, destPath: string, callback: (err: string | undefined) => void): void {
+    fs.cp(originPath, destPath, {recursive: true}, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
 }
