@@ -110,6 +110,14 @@ export class CommandWrapper {
     });
   }
 
+  /**
+   * Copia el contenido de un directorio o un fichero concreto en una nueva
+   * ruta especificada por parámetro
+   * @param originPath Ruta de origen
+   * @param destPath Ruta de destino
+   * @param callback Patrón callback que proporciona un error en el caso de
+   * que la copia no se haya podido efectúar por cualquier motivo.
+   */
   public copy(originPath: string, destPath: string, callback: (err: string | undefined) => void): void {
     fs.cp(originPath, destPath, {recursive: true}, (err) => {
       if (err) {
