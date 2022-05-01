@@ -28,12 +28,35 @@ export class CommandWrapper {
     });
   }
 
+  /**
+   * Crea un directorio dada una ruta introducida por parámetro
+   * @param path Ruta donde ubicar el directorio
+   * @param callback Patrón callback que permite devolver un error en el caso de
+   * no haberse podido crear correctamente un directorio.
+   */
   public createDir(path: string, callback: (err: string | undefined) => void): void {
     fs.mkdir(path, (err) => {
       if (err) {
         callback(`ERROR: ${err.message}`);
       } else {
         callback(undefined);
+      }
+    });
+  }
+
+  /**
+   * Lista el contenido de un directorio cuya ruta es introducida por parámetro
+   * @param path Ruta del directorio
+   * @param callback Patrón callback que permite devolver un error en el caso
+   * de no poder listar dicho directorio o una lista de los nombres de los
+   * ficheros que pertenecen a dicho directorio.
+   */
+  public listDir(path: string, callback: (err: string | undefined, files: string[] | undefined) => void): void {
+    fs.readdir(path, (err, files)=> {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else if (files) {
+        callback(undefined, files);
       }
     });
   }

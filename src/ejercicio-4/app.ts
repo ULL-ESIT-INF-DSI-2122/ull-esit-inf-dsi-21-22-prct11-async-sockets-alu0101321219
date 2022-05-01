@@ -51,4 +51,28 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'list',
+  describe: 'List the contents of a directory',
+  builder: {
+    dirPath: {
+      describe: 'Directory path to list',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.dirPath === 'string') {
+      const commandWrapper: CommandWrapper = new CommandWrapper();
+      commandWrapper.listDir(argv.dirPath, (err, files) => {
+        if (err) {
+          console.log(chalk.red(err));
+        } else if (files) {
+          console.log(chalk.green(`'${argv.dirPath}' files = ${files}`));
+        }
+      });
+    }
+  },
+});
+
 yargs.parse();
