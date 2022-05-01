@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as yargs from 'yargs';
 import * as chalk from 'chalk';
 
 /**
@@ -29,13 +28,18 @@ export class NoteWatcher {
     this.user = user;
   }
 
+  /**
+   * Comienza a realizar la vigilancia de los cambios realizados sobre el
+   * directorio del fichero especificado.
+   * @param callback Implenta el patrón callback para devolver un error o una
+   * cadena con el tipo de evento realizado.
+   */
   public initialize(callback: (err: string | undefined, event: string | undefined) => void): void {
     fs.access(`./notes/${this.getUser()}`, fs.constants.F_OK, (err) => {
       if (err) {
         callback(`ERROR: ${err.message}`, undefined);
       } else {
         fs.watch(`./notes/${this.getUser()}`, (eventType, fileName) => {
-          console.log(eventType);
           if (eventType === 'rename') {
             fs.access(`./notes/${this.getUser()}/${fileName}`, fs.constants.F_OK, (err) => {
               if (err) {
@@ -58,33 +62,3 @@ export class NoteWatcher {
     });
   }
 }
-
-/**
- * Comando para contar el número de ocurrencias de una determinada palbra
- * dentro de un fichero.
- */
-yargs.command({
-  command: 'watch',
-  describe: 'Count the number of ocurrences of a word in a especific file',
-  builder: {
-    user: {
-      describe: 'user',
-      demmandOption: true,
-      type: 'string',
-    },
-  },
-  handler(argv) {
-    if (typeof argv.user === 'string') {
-      const noteWatcher: NoteWatcher = new NoteWatcher(argv.user);
-      noteWatcher.initialize((err, evenType) => {
-        if (err) {
-          console.log(chalk.red(err));
-        } else if (evenType) {
-          console.log(evenType);
-        }
-      });
-    }
-  },
-});
-
-yargs.parse();
