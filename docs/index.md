@@ -104,7 +104,7 @@ public method2(callback: (err: string | undefined, numberOfWords: number | undef
 Como se observa, en este no se hace uso del método `pipe`, si no que se escribe en el comando `grep` la salida de cada una de las partes del comando `cat` a través de  `grep.stdin.write(piece)`. Así pues, al finalizar el comando `cat` (`cat.on(close)`) se finaliza también la escritura del comando `grep` (`grep.stind.end()`). El resto del procedimiento es idéntico al del método anterior.
 
 Por otro lado, se ha hecho uso del __paquete `yargs`__ para obtener por comandos tanto la ruta del fichero a utilizar, como la palabra a buscar y el método a utilizar.
-```typescrcipt
+```typescript
 yargs.command({
   command: 'countWords',
   describe: 'Count the number of ocurrences of a word in a especific file',
@@ -222,6 +222,119 @@ Cómo se puede observar, este checkea inicialmente la _existencia del fichero de
 - __¿Y cuando se modifica?__ Un evento del tipo `change`.
 - __¿Cómo haría para mostrar, no solo el nombre, sino también el contenido del fichero, en el caso de que haya sido creado o modificado?__ Esto ha sido realizado y explicado anteriormente en la misma práctica. Para realizar esto básicamente hace uso del metodo `fs.readFile`, el cual nos proporciona en su _callback_ una variable `data` donde se almacena el bufer del contenido leído.
 - __¿Cómo haría para que no solo se observase el directorio de un único usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicación de notas?__ Realizar esto es tan sencillo como cambiar la ruta de los ficheros a vigilar, en este caso todo el directorio `./notes`, y activar la opción de recursividad del mismo `fs.watch`, la cual hace que la vigilancia aplique a todos los subdirectorios del directorio especificado. La cabecera del `fs.watch` quedaría de la siguiente manera: `fs.watch("./notes/${this.getUser()}", {recursive: true}, (eventType, fileName)`. El problema de esta opción es que, según se especifica en la página de node, esta únicamente sirve para los sistemas de Windows y Linux. Por lo que a consecuente, no la podemos implementar en esta práctica puesto que utilizamos `Linux`.
+
+## Ejercicio 4
+### Descripción
+Desarrolle una aplicación que permita hacer de __wrapper__ de los distintos comandos empleados en Linux para el manejo de ficheros y directorios. En concreto, la aplicación deberá permitir:
+1. Dada una ruta concreta, mostrar si es un directorio o un fichero.
+2. Crear un nuevo directorio a partir de una nueva ruta que recibe como parámetro.
+3. Listar los ficheros dentro de un directorio.
+4. Mostrar el contenido de un fichero (similar a ejecutar el comando cat).
+5. Borrar ficheros y directorios.
+6. Mover y copiar ficheros y/o directorios de una ruta a otra. Para este caso, la aplicación recibirá una ruta origen y una ruta destino. En caso de que la ruta origen represente un directorio, se debe copiar dicho directorio y todo su contenido a la ruta destino.
+
+### Solución
+Para crear la __solución de dicho ejercicio__ se ha desarrollado la __clase `CommandWrapper`, cuyo constructor no recibe argumentos.
+```typescript
+  constructor() {}
+```
+Esta clase implementa, salvo para el punto 5, un método por cada una de las funcionalidades que se especifican en la descripción. Así pues, para el __primer punto__ tenemos el siguiente método:
+```typescript
+public isAFile(path: string, callback: (err: string | undefined, isFile: boolean | undefined) => void): void {
+    fs.lstat(path, (err, stats) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else if (stats) {
+        callback(undefined, stats.isFile());
+      }
+    });
+  }
+```
+Este útiliza el método `fs.lstat` de node.js para comprobar si una ruta introducida se corresponde con un fichero o un directorio. Como se puede apreciar, este implementa el patrón callback devolviendo un error en caso de que la ruta introducida sea incorrecta y una variable booleana en el caso de que se haya producido un éxito que indica si dicho elemento es un archivo o no.
+
+Para el __segundo punto__ se lleva a cabo en cambio el siguiente método:
+```typescript
+public createDir(path: string, callback: (err: string | undefined) => void): void {
+    fs.mkdir(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
+```
+El código de este es sumamente sencillo, simplemente invoca al método `fs.mkdir` de node.js para crear un directorio. Como podemos observar, esta función también implementa el patrón callback. Cabe destacar que tanto esta como los siguientes métodos que comentaremos implementarán también dicho patrón.
+
+Para el __tercer punto__ se lleva a cabo el método `listDir`:
+```typescript
+public listDir(path: string, callback: (err: string | undefined, files: string[] | undefined) => void): void {
+    fs.readdir(path, (err, files)=> {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else if (files) {
+        callback(undefined, files);
+      }
+    });
+  }
+```
+Este, de la misma manera que el resto de métodos, hace uso del método `readDir` de node.js para listar el conjunto de archivos que tiene dentro del mismo, retornando a través del _callback_ un error en caso de que se produzca. Como se puede observar, el conjunto de archivos se devuelve como un `array` de `string` con los nombres de los correspondientes ficheros.
+
+Para el __cuarto punto__ se emula el comportamiento del comando `cat` utilizando el método `readFile` que nos proporciona node.js:
+```typescript
+public readFie(path: string, callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.readFile(path, (err, data) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`, undefined);
+      } else if (data) {
+        callback(undefined, data.toString());
+      }
+    });
+  }
+```
+El código de dicho método es nuevamente sencillo. Simplemente implementa el patrón callback para utilizar el método `readFile`, devolviendo un error en el caso de que se produzca o una `string` con la información leía del fichero. Para transformar el conjunto de datos leído en una `string` nótese que usamos `data.toString()`.
+
+Para el __quinto punto__ se han llevado a cabo en cambio 2 funciones. Una primera función para __borrar archivos__:
+```typescript
+public removeFile(path: string, callback: (err: string | undefined) => void): void {
+    fs.rm(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
+```
+Y otra __segunda función__ para __borrar directorios__:
+```typescript
+public removeDir(path: string, callback: (err: string | undefined) => void): void {
+    fs.rmdir(path, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
+```
+Ambas utilizan los métodos `rm` y `rmdir` de node.js respectivamente e implementan el patrón callback devolviendo nuevamente un error en caso de que se produzca. Nótese que cuando dichas operaciones tienen éxito no devuelven nada, por lo tanto devuelven un callback con su único atributo con valor `undefined`. Este es tratado posteriormente en el menú para mostrar un mensaje confirmando el éxito.
+
+Por último, para el __sexto punto__ se emplea el siguiente método:
+```typescript
+public copy(originPath: string, destPath: string, callback: (err: string | undefined) => void): void {
+    fs.cp(originPath, destPath, {recursive: true}, (err) => {
+      if (err) {
+        callback(`ERROR: ${err.message}`);
+      } else {
+        callback(undefined);
+      }
+    });
+  }
+```
+Su diseño se basa en la utilización del metodo `cp` de node.js para copiar una ruta en otra. Como se puede observar está activado el flag `recursive` para que al tratarse de un directorio se copien todos los archivos dentro del mismo en una nueva ruta. Nuevamente, si se produce un error será propagado a través del callback. En cambio, si no se produce se emitirá un _callback_ con un valor `undefined` que indicará que se tuvo éxito.
+
+__Todos estos métodos__ están implementados a través de un menú utilizando `yargs`, tal y como se realizó para los apartados anteriores. Para cada uno de los comandos este simplemente se limita a crear un objeto de la clase `CommandWrapper` y ejecutar el método correspondiente. Asimismo, emplea el paquete `chalk` para imprimir en verde los mensajes de éxito y en rojo los mensajes de fallo.
 
 ## Referencias
 - [Práctica 10 - Sistema de ficheros y creación de procesos en Node.js](https://ull-esit-inf-dsi-2122.github.io/prct10-async-fs-process/)
