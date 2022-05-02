@@ -39,4 +39,13 @@ describe('Ejercicio 2', () => {
       }
     });
   });
+
+  it('El método 1 implementado en la clase CountFileWords funciona correctamente', (done) => {
+    new CountFileWords('README.md', 'repositorio').method1((err, numberOfWords) => {
+      if (numberOfWords) {
+        expect(numberOfWords).to.be.equal(2);
+        done();
+      }
+    });
+  });
 });
