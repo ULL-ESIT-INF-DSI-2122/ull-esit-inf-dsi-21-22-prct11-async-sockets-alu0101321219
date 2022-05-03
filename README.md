@@ -1,12 +1,12 @@
-# Práctica 10 - Sistema de ficheros y creación de procesos en Node.js
-Este repositorio contiene el desarrollo de la "[Práctica 10 - Sistema de ficheros y creación de procesos en Node.js](https://ull-esit-inf-dsi-2122.github.io/prct10-async-fs-process/)".
+# Práctica 11 - Implementación de un cliente y un servidor de la aplicación de procesamiento de notas mediante Sockets en Node.js
+Este repositorio contiene el desarrollo de la "[Práctica 11 - Cliente y servidor para una aplicación de procesamiento de notas de texto](https://ull-esit-inf-dsi-2122.github.io/prct11-async-sockets/)".
 
 ## Datos generales
 - Universidad de la Laguna
 - Grado en Ingeniería Informática 
 - Curso nº 3, segundo cuatrimestre
 - Asignatura: Desarrollo en Sistemas Informáticos
-- Fecha de entrega: 01/05/2022
+- Fecha de entrega: 08/05/2022
 - Autor:
   - Adrián González Galván
   - alu0101321219@ull.edu.es
