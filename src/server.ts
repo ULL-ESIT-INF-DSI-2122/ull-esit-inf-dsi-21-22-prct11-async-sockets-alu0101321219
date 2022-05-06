@@ -1,14 +1,15 @@
 import * as net from 'net';
 import {EventEmitterServer} from './eventEmitterServer';
+import {Note} from './note';
+import {NoteManagement} from './noteMagenement';
 
 net.createServer((connection) => {
-  console.log('A client has connected.');
   const server = new EventEmitterServer(connection);
   server.on('request', (message) => {
-    console.log(message);
-  });
-  connection.on('close', () => {
-    console.log('A client has disconnected.');
+    if (message.type == 'add') {
+      console.log(new NoteManagement().addNote(new Note(message.title, message.body, message.color), message.user));
+      connection.end();
+    }
   });
 }).listen(60300, () => {
   console.log('Waiting for clients to connect.');
