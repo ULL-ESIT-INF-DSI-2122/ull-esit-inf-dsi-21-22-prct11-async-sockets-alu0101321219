@@ -1,12 +1,11 @@
 import * as net from 'net';
+import {EventEmitterServer} from './eventEmitterServer';
 
 net.createServer((connection) => {
   console.log('A client has connected.');
-
-  connection.write('Connection stablished...');
-  connection.on('data', (piece) => {
-    console.log(piece.toString());
-    connection.write('buenaas');
+  const server = new EventEmitterServer(connection);
+  server.on('request', (message) => {
+    console.log(message);
   });
   connection.on('close', () => {
     console.log('A client has disconnected.');
