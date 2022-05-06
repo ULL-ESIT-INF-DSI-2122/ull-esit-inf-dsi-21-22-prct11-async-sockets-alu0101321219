@@ -38,12 +38,11 @@ export class NoteManagement {
    * Elimina todas las notas de todos los usuarios
    * @returns {boolean} Determina el éxito de la operación
    */
-  public removeAllNotes(): boolean {
+  public removeAllNotes(): true {
     if (fs.existsSync('./notes')) {
       fs.rmSync('./notes', {recursive: true});
-      return true;
     }
-    return false;
+    return true;
   }
 
   /**
