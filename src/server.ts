@@ -2,7 +2,7 @@ import * as net from 'net';
 import * as chalk from 'chalk';
 import {EventEmitterServer} from './eventEmitterServer';
 import {Note} from './note';
-import {NoteManagement} from './noteMagenement';
+import {NoteManagement} from './noteManagement';
 import {Response} from './interfaces/response';
 
 /**

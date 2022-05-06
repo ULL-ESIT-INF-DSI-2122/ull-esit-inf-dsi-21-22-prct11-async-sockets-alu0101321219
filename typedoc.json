@@ -1,6 +1,15 @@
 {
   "entryPoints": [
-    "./src/index.ts"
+    "./src/interfaces/noteSchema.ts",
+    "./src/interfaces/request.ts",
+    "./src/interfaces/response.ts",
+    "./src/client.ts",
+    "./src/eventEmitterClient.ts",
+    "./src/eventEmitterServer.ts",
+    "./src/note.ts",
+    "./src/noteManagement.ts",
+    "./src/notePrinter.ts",
+    "./src/server.ts"
   ],
   "out": "./typedoc"
 }

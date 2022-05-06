@@ -1,6 +1,6 @@
 import 'mocha';
 import {expect} from 'chai';
-import {NoteManagement} from '../src/noteMagenement';
+import {NoteManagement} from '../src/noteManagement';
 import {Note} from '../src/note';
 
 describe('NoteManagement', () => {
