@@ -3,6 +3,11 @@ import * as chalk from 'chalk';
 import {connect} from 'net';
 import {EventEmitterClient} from './eventEmitterClient';
 import {Request} from './interfaces/request';
+import {NotePrinter} from './notePrinter';
+import {Note} from './note';
+
+const socket = connect({port: 60300});
+const client = new EventEmitterClient(socket);
 
 /**
  * Comando empleado para añadir una nota.
@@ -43,12 +48,7 @@ yargs.command({
           body: argv.body,
           color: argv.color,
         };
-        const socket = connect({port: 60300});
-        const client = new EventEmitterClient(socket);
         socket.write(JSON.stringify(request) + '\n');
-        client.on('respond', (data) => {
-          console.log(data.toString());
-        });
       } else {
         console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
       }
@@ -57,3 +57,13 @@ yargs.command({
 });
 
 yargs.parse();
+
+client.on('respond', (message) => {
+  if (message.type == 'add') {
+    if (message.success) {
+      console.log(chalk.green(`Note has been added correctly!`));
+    } else {
+      console.log(chalk.red('Error: This note already exists!'));
+    }
+  }
+});
