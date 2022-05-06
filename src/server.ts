@@ -1,9 +1,14 @@
 import * as net from 'net';
+import * as chalk from 'chalk';
 import {EventEmitterServer} from './eventEmitterServer';
 import {Note} from './note';
 import {NoteManagement} from './noteMagenement';
 import {Response} from './interfaces/response';
 
+/**
+ * Estrucutra del servidor empleada, esta escucha en el puerto 60300 del
+ * ordenador local.
+ */
 net.createServer((socket) => {
   const server = new EventEmitterServer(socket);
   server.on('request', (message) => {
@@ -74,7 +79,10 @@ net.createServer((socket) => {
       socket.write(JSON.stringify({type: 'invalid'}));
     }
     socket.end();
+    socket.on('close', () => {
+      console.log(chalk.green('A request has been attended!!'));
+    });
   });
 }).listen(60300, () => {
-  console.log('Waiting for clients to connect.');
+  console.log(chalk.yellow('Server is working!!'));
 });
