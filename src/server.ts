@@ -27,7 +27,17 @@ net.createServer((socket) => {
       };
       socket.write(JSON.stringify(response));
     } else if (message.type == 'remove') {
-
+      let result: boolean = false;
+      if (message.title) {
+        result = new NoteManagement().removeNote(message.title, message.user);
+      } else {
+        result = new NoteManagement().removeAllUserNotes(message.user);
+      }
+      const response: Response = {
+        type: 'remove',
+        success: result,
+      };
+      socket.write(JSON.stringify(response));
     } else if (message.type == 'read') {
       const note: Note | undefined = new NoteManagement().readNote(message.title, message.user);
       let response: Response;

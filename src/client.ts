@@ -142,6 +142,39 @@ yargs.command({
 });
 
 yargs.command({
+  command: 'remove',
+  describe: 'Remove an existing note or a set of notes',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      const request: Request = {
+        type: 'remove',
+        user: argv.user,
+        title: argv.title,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    } else if (typeof argv.user == 'string' && typeof argv.title === 'undefined') {
+      const request: Request = {
+        type: 'remove',
+        user: argv.user,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+
+yargs.command({
   command: 'list',
   describe: 'List all titles of user notes',
   builder: {
@@ -182,6 +215,12 @@ client.on('respond', (message) => {
       console.log(new NotePrinter(Note.deserialize(message.notes[0])).print());
     } else {
       console.log(chalk.red('Error: This note doesnt exist!'));
+    }
+  } else if (message.type == 'remove') {
+    if (message.success) {
+      console.log(chalk.green(`Note/s has been removed correctly!`));
+    } else {
+      console.log(chalk.red("Error: This note or user doesn't exist!"));
     }
   } else if (message.type == 'list') {
     if (message.success) {
