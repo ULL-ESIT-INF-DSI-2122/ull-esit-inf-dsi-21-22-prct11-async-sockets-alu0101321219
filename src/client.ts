@@ -114,6 +114,33 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'read',
+  describe: 'Read an user note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      const request: Request = {
+        type: 'read',
+        user: argv.user,
+        title: argv.title,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+
 yargs.parse();
 
 client.on('respond', (message) => {
@@ -129,6 +156,13 @@ client.on('respond', (message) => {
       console.log(chalk.green(`Note has been updated correctly!`));
     } else {
       console.log(chalk.red("Error: This note doesn't exists!"));
+    }
+  }
+  if (message.type == 'read') {
+    if (message.success) {
+      console.log(new NotePrinter(Note.deserialize(message.notes[0])).print());
+    } else {
+      console.log(chalk.red('Error: This note doesnt exist!'));
     }
   }
 });
