@@ -5,6 +5,7 @@ import {EventEmitterClient} from './eventEmitterClient';
 import {Request} from './interfaces/request';
 import {NotePrinter} from './notePrinter';
 import {Note, Color} from './note';
+import {NoteSchema} from './interfaces/noteSchema';
 
 const socket = connect({port: 60300});
 const client = new EventEmitterClient(socket);
@@ -57,6 +58,9 @@ yargs.command({
   },
 });
 
+/**
+ * Comando para modificar el contenido de una nota.
+ */
 yargs.command({
   command: 'update',
   describe: 'Update a note',
@@ -114,6 +118,9 @@ yargs.command({
   },
 });
 
+/**
+ * Comando para leer una nota de un determinado usuario.
+ */
 yargs.command({
   command: 'read',
   describe: 'Read an user note',
@@ -141,6 +148,10 @@ yargs.command({
   },
 });
 
+/**
+ * Comando empleado para eliminar una nota o el conjunto de notas de un
+ * determinado usuario.
+ */
 yargs.command({
   command: 'remove',
   describe: 'Remove an existing note or a set of notes',
@@ -174,6 +185,10 @@ yargs.command({
   },
 });
 
+/**
+ * Comando para listar los títulos de todas las notas de un determinado
+ * usuario.
+ */
 yargs.command({
   command: 'list',
   describe: 'List all titles of user notes',
@@ -195,8 +210,9 @@ yargs.command({
   },
 });
 
-yargs.parse();
-
+/**
+ * Recepción de posibles respuestas
+ */
 client.on('respond', (message) => {
   if (message.type == 'add') {
     if (message.success) {
@@ -208,7 +224,7 @@ client.on('respond', (message) => {
     if (message.success) {
       console.log(chalk.green(`Note has been updated correctly!`));
     } else {
-      console.log(chalk.red("Error: This note doesn't exists!"));
+      console.log(chalk.red("Error: This note doesn't exist!"));
     }
   } else if (message.type == 'read') {
     if (message.success) {
@@ -224,11 +240,18 @@ client.on('respond', (message) => {
     }
   } else if (message.type == 'list') {
     if (message.success) {
-      message.notes.forEach((note) => {
+      message.notes.forEach((note: NoteSchema) => {
         console.log(new NotePrinter(Note.deserialize(note)).printTitle());
       });
     } else {
-      console.log(chalk.red('Error: This user doesnt have any notes!'));
+      console.log(chalk.red('Error: This user doesnt exist!'));
     }
+  } else {
+    console.log(chalk.red('Error: Invalid type of message!'));
   }
 });
+
+/**
+ * Ejecución de 'yargs'
+ */
+yargs.parse();
