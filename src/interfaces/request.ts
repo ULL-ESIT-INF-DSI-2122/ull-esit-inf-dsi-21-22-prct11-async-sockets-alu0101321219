@@ -1,4 +1,4 @@
-export type Color = 'red' | 'yellow' | 'green' | 'blue';
+import {Color} from "../note";
 
 /**
  * Interfaz implementada para representar los atributos de un mensaje
