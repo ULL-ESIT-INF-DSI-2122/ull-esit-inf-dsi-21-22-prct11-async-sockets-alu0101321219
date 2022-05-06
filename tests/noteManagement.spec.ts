@@ -1,7 +1,6 @@
 import 'mocha';
 import {expect} from 'chai';
 import {NoteManagement} from '../src/noteMagenement';
-import * as chalk from 'chalk';
 import {Note} from '../src/note';
 
 describe('NoteManagement', () => {
@@ -19,7 +18,7 @@ describe('NoteManagement', () => {
   });
 
   it('Se eliminan todas las notas correctamente', () => {
-    expect(noteManagement.removeAllNotes()).to.be.equal(chalk.green('All notes have been removed correctly!'));
+    expect(noteManagement.removeAllNotes()).to.be.true;
   });
 
   it('La clase cuenta con un método para añadir una nota', () => {
@@ -28,15 +27,15 @@ describe('NoteManagement', () => {
 
   it('El método que añade notas funciona correctamente', () => {
     const note: Note = new Note('Titulo', 'Cuerpo', 'green');
-    expect(noteManagement.addNote(note, 'adrian')).to.be.equal(chalk.green(`Note has been added correctly!`));
-    expect(noteManagement.addNote(note, 'adrian')).to.be.equal(chalk.red('Error: This note already exists!'));
-    expect(noteManagement.addNote(note, 'adrian2')).to.be.equal(chalk.green(`Note has been added correctly!`));
+    expect(noteManagement.addNote(note, 'adrian')).to.be.true;
+    expect(noteManagement.addNote(note, 'adrian')).to.be.false;
+    expect(noteManagement.addNote(note, 'adrian2')).to.be.true;
   });
 
   it('La clase cuenta con un método para eliminar una nota', () => {
     expect('removeNote' in noteManagement).to.be.true;
-    expect(noteManagement.removeNote('Titulo', 'adrian2')).to.be.equal(chalk.green(`Note has been removed correctly!`));
-    expect(noteManagement.removeNote('Titulo', 'adrian2')).to.be.equal(chalk.red("Error: This note doesn't exist!"));
+    expect(noteManagement.removeNote('Titulo', 'adrian2')).to.be.true;
+    expect(noteManagement.removeNote('Titulo', 'adrian2')).to.be.false;
   });
 
   it('La clase cuenta con un método para leer una nota', () => {
@@ -44,8 +43,8 @@ describe('NoteManagement', () => {
   });
 
   it('El método para leer una nota funciona correctamente', () => {
-    expect(noteManagement.readNote('Titulo', 'adrian')).to.be.equal(chalk.green('Titulo') + '\n' + chalk.green.inverse('Cuerpo\n'));
-    expect(noteManagement.readNote('Titulo', 'adrian2')).to.be.equal(chalk.red('Error: This note doesnt exist!'));
+    expect(noteManagement.readNote('Titulo', 'adrian')).to.be.deep.equal(new Note('Titulo', 'Cuerpo', 'green'));
+    expect(noteManagement.readNote('Titulo', 'adrian2')).to.be.equal(undefined);
   });
 
   it('La clase cuenta con un método para modificar el cuerpo de una nota', () => {
@@ -53,9 +52,9 @@ describe('NoteManagement', () => {
   });
 
   it('El método para modificar el cuerpo de una nota funciona correctamente', () => {
-    expect(noteManagement.modNoteBody('Titulo', 'adrian', 'Cuerpo')).to.be.equal(chalk.yellow('Warning: This note already has this body'));
-    expect(noteManagement.modNoteBody('Titulo', 'adrian', 'nuevoCuerpo')).to.be.equal(chalk.green('Note body has been modified correctly!'));
-    expect(noteManagement.modNoteBody('Titulo', 'adrian2', 'nuevoCuerpo')).to.be.equal(chalk.red('Error: This note doesnt exist!'));
+    expect(noteManagement.modNoteBody('Titulo', 'adrian', 'Cuerpo')).to.be.true;
+    expect(noteManagement.modNoteBody('Titulo', 'adrian', 'nuevoCuerpo')).to.be.true;
+    expect(noteManagement.modNoteBody('Titulo', 'adrian2', 'nuevoCuerpo')).to.be.false;
   });
 
   it('La clase cuenta con un método para modificar el color de una nota', () => {
@@ -63,9 +62,9 @@ describe('NoteManagement', () => {
   });
 
   it('El método para modificar el color de una nota funciona correctamente', () => {
-    expect(noteManagement.modNoteColor('Titulo', 'adrian', 'green')).to.be.equal(chalk.yellow('Warning: This note already has this color'));
-    expect(noteManagement.modNoteColor('Titulo', 'adrian', 'yellow')).to.be.equal(chalk.green('Note color has been modified correctly!'));
-    expect(noteManagement.modNoteColor('Titulo', 'adrian2', 'yellow')).to.be.equal(chalk.red('Error: This note doesnt exist!'));
+    expect(noteManagement.modNoteColor('Titulo', 'adrian', 'green')).to.be.true;
+    expect(noteManagement.modNoteColor('Titulo', 'adrian', 'yellow')).to.be.true;
+    expect(noteManagement.modNoteColor('Titulo', 'adrian2', 'yellow')).to.be.false;
   });
 
   it('La clase cuenta con un método para listar las notas de un usuario', () => {
@@ -73,8 +72,8 @@ describe('NoteManagement', () => {
   });
 
   it('El método para listar las notas de un usuario funciona correctamente', () => {
-    expect(noteManagement.listNotes('adrian')).to.be.equal(chalk.yellow('Titulo') + '\n');
-    expect(noteManagement.listNotes('adrian2')).to.be.equal(chalk.red('Error: This user doesnt have any notes!'));
+    expect(noteManagement.listNotes('adrian')).to.be.deep.equal([new Note('Titulo', 'nuevoCuerpo', 'yellow')]);
+    expect(noteManagement.listNotes('adrian2')).to.be.equal(undefined);
   });
 
   it('La clase cuenta con un método para eliminar todas las notas de un usuario', () => {
@@ -82,7 +81,7 @@ describe('NoteManagement', () => {
   });
 
   it('El método para eliminar todas las notas de un usuario funciona correctamente', () => {
-    expect(noteManagement.removeAllUserNotes('adrian')).to.be.equal(chalk.green('User have been removed succesfully!'));
-    expect(noteManagement.removeAllUserNotes('adrian')).to.be.equal(chalk.red('Error: This user doesnt exists!'));
+    expect(noteManagement.removeAllUserNotes('adrian')).to.be.true;
+    expect(noteManagement.removeAllUserNotes('adrian')).to.be.false;
   });
 });
