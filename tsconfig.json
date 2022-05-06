@@ -11,7 +11,7 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "strictPropertyInitialization": true,

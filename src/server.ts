@@ -45,9 +45,23 @@ net.createServer((socket) => {
       }
       socket.write(JSON.stringify(response));
     } else if (message.type == 'list') {
-
+      const notes: Note[] | undefined = new NoteManagement().listNotes(message.user);
+      let response: Response;
+      if (notes) {
+        response = {
+          type: 'list',
+          success: true,
+          notes: notes,
+        };
+      } else {
+        response = {
+          type: 'list',
+          success: false,
+        };
+      }
+      socket.write(JSON.stringify(response));
     } else {
-
+      socket.write(JSON.stringify({type: 'invalid'}));
     }
     socket.end();
   });

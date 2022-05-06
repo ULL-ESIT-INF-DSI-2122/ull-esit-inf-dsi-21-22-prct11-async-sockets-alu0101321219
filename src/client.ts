@@ -58,8 +58,8 @@ yargs.command({
 });
 
 yargs.command({
-  command: 'mod',
-  describe: 'Modify a note',
+  command: 'update',
+  describe: 'Update a note',
   builder: {
     user: {
       describe: 'User',
@@ -141,6 +141,27 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: 'list',
+  describe: 'List all titles of user notes',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string') {
+      const request: Request = {
+        type: 'list',
+        user: argv.user,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+
 yargs.parse();
 
 client.on('respond', (message) => {
@@ -150,19 +171,25 @@ client.on('respond', (message) => {
     } else {
       console.log(chalk.red('Error: This note already exists!'));
     }
-  }
-  if (message.type == 'update') {
+  } else if (message.type == 'update') {
     if (message.success) {
       console.log(chalk.green(`Note has been updated correctly!`));
     } else {
       console.log(chalk.red("Error: This note doesn't exists!"));
     }
-  }
-  if (message.type == 'read') {
+  } else if (message.type == 'read') {
     if (message.success) {
       console.log(new NotePrinter(Note.deserialize(message.notes[0])).print());
     } else {
       console.log(chalk.red('Error: This note doesnt exist!'));
+    }
+  } else if (message.type == 'list') {
+    if (message.success) {
+      message.notes.forEach((note) => {
+        console.log(new NotePrinter(Note.deserialize(note)).printTitle());
+      });
+    } else {
+      console.log(chalk.red('Error: This user doesnt have any notes!'));
     }
   }
 });
