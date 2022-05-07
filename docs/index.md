@@ -39,3 +39,41 @@ export interface Response {
 ```
 Como podemos ver, en ambas se debe señalar el tipo de operación a la que se está haciendo referencia mediante el atributo `type`. En el caso de las __peticiones__, el único atributo obligatorio (a parte del `type`) es el nombre de usuario o propietario de notas que se quiere señalar. El resto de atributos se emplean dependiendo del tipo de operación efectuada.
 Por otro lado, para los __mensajes de respuesta__ se devuelve un campo `success` cuya finalidad es informar si se ha completado correctamente la operación o no. El campo llamado `notes` que le precede solo se utilizará en el caso de que el cliente solicite la lectura de una nota o un conjunto de notas.
+
+## Clases empleadas para el cliente y servidor
+En esta práctica he optado por realizar 2 clases que hereden de `EventEmitter` tanto para cliente como para servidor, con el principal objetivo de encapsular las funcionalidades de los mismos. Ambas emplean el socket que se les pasa en el constructor para recopilar datos en una variable `wholeData` cuando los reciben.
+
+En el caso del __cliente__ recopila datos hasta que le llega un evento de tipo `end`, pues el servidor cierra la conexión del cliente luego de responder su petición. Cuando esto sucede se emite un evento con `this.emit` llamado `respond` que contiene la información parseada.
+```typescript
+export class EventEmitterClient extends EventEmitter {
+  constructor(connection: EventEmitter) {
+    super();
+    let wholeData = '';
+    connection.on('data', (piece) => {
+      wholeData += piece.toString();
+    });
+    connection.on('end', () => {
+      this.emit('respond', JSON.parse(wholeData));
+    });
+  }
+}
+```
+En el caso del __servidor__, este recopila datos hasta leer el carácter `\n`. Puesto que el cliente no puede emitir un `end` para informar que se ha terminado de escribir, ya que esto cerraría el canal de comunicación con el servidor, se ha procedido a enviar el archivo `JSON` correspondiente con un `\n` al final del mismo. Así pues, cuando el servidor obtiene un mensaje completo emite un evento llamado `request` con la información del `JSON` correspondiente que almacena los datos de la petición recibida ya formateada.
+```typescript
+  export class EventEmitterServer extends EventEmitter {
+  constructor(connection: EventEmitter) {
+    super();
+    let wholeData = '';
+    connection.on('data', (piece) => {
+      wholeData += piece.toString();
+      let messageLimit = wholeData.indexOf('\n');
+      while (messageLimit !== -1) {
+        const message = wholeData.substring(0, messageLimit);
+        wholeData = wholeData.substring(messageLimit + 1);
+        messageLimit = wholeData.indexOf('\n');
+        this.emit('request', JSON.parse(message));
+      }
+    });
+  }
+}
+```
