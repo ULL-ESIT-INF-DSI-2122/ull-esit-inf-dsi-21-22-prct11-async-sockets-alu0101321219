@@ -77,3 +77,245 @@ En el caso del __servidor__, este recopila datos hasta leer el carácter `\n`. P
   }
 }
 ```
+
+## Cliente
+Para el desarrollo del cliente tenemos el fichero `client.ts`, este emplea el módulo `yargs` tal y como se especifica en el enunciado de la práctica para captar los comandos que se introducen por teclado. Este inicia definniendo el socket por el que se establecerá la conexión (el cual es el correspondiente con el puerto 60300) y declarando un objeto de la clase `EventEmitterClient` explicada anteriormente.
+```typescript
+const socket = connect({port: 60300});
+const client = new EventEmitterClient(socket);
+```
+Posteriormente se atienden los distintos comandos con un `yargs.command`. Para el caso de __añadir notas__ podemos observar como se crea el objeto `request` correspondiente y se escribe a través del socket. A la hora de recoger los parámetros del comando tenemos en cuenta de que nos pueden introducir colores no existentes, imprimiendo por pantalla un mensaje si es el caso y destruyendo el socket para que no quede el canal de comunicación del cliente abierto.
+```typescript
+yargs.command({
+  command: 'add',
+  describe: 'Add a new note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+    body: {
+      describe: 'Note body',
+      demandOption: true,
+      type: 'string',
+    },
+    color: {
+      describe: 'Note color',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string' &&
+      typeof argv.body === 'string' && typeof argv.color === 'string') {
+      if (argv.color == 'red' || argv.color == 'green' || argv.color == 'red' || argv.color == 'yellow') {
+        const request: Request = {
+          type: 'add',
+          user: argv.user,
+          title: argv.title,
+          body: argv.body,
+          color: argv.color,
+        };
+        socket.write(JSON.stringify(request) + '\n');
+      } else {
+        console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
+        socket.destroy();
+      }
+    }
+  },
+});
+```
+Para __actualizar notas__ se checkea también que el color introducido sea válido y que se haya introducido al menos un nuevo `body` o `color`, destruyendo el socket si es el caso. En otro caso se crea el objeto `request` al que se le asigna el body o color correspondiente (en el caso de que estén definidos) y se envía la información convertida a `string` a través del socket.
+```typescript
+yargs.command({
+  command: 'update',
+  describe: 'Update a note',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+    body: {
+      describe: 'New body',
+      demandOption: false,
+      type: 'string',
+    },
+    color: {
+      describe: 'New color',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      if (typeof argv.body === 'string' || typeof argv.color == 'string') {
+        if (typeof argv.color == 'string' && argv.color != 'blue' &&
+          argv.color != 'green' && argv.color != 'red' && argv.color != 'yellow') {
+          console.log(chalk.red('Error: color not valid (valid colors: "red", "green", "blue", "yellow")'));
+          socket.destroy();
+        } else {
+          let body: string | undefined = undefined;
+          let color: Color | undefined = undefined;
+          if (typeof argv.body === 'string') body = argv.body;
+          if (typeof argv.color == 'string' && (argv.color == 'blue' ||
+            argv.color == 'green' || argv.color == 'red' || argv.color == 'yellow')) {
+            color = argv.color;
+          }
+          const request: Request = {
+            type: 'update',
+            user: argv.user,
+            title: argv.title,
+            body: body,
+            color: color,
+          };
+          socket.write(JSON.stringify(request) + '\n');
+        }
+      } else {
+        console.log(chalk.yellow('Warning: please type a new body or a new color to modify the note'));
+        socket.destroy();
+      }
+    }
+  },
+});
+```
+En el caso de  __leer notas__ la petición a realizar es más sencilla, pues los campos que se deben rellenar son únicamente el tipo, el nombre de usuario y el título de la nota. Esta información se envía nuevamente convertida a cadena a través del socket.
+```typescript
+yargs.command({
+  command: 'read',
+  describe: 'Read an user note',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      const request: Request = {
+        type: 'read',
+        user: argv.user,
+        title: argv.title,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+```
+Para __borrar notas__ se permite indicar si se quieren borrar todas las notas de un usuario en concreto o solo una en específica, la cual se debe señalar indicando el título. Así pues el `request` que se envía se rellena con los campos `type`,  `user` y `title` en el caso de que se quiera borrar únicamente una nota. Nuevamente, se envían los datos convertidos a cadena a través del socket.
+```typescript
+yargs.command({
+  command: 'remove',
+  describe: 'Remove an existing note or a set of notes',
+  builder: {
+    user: {
+      describe: 'Note owner',
+      demandOption: true,
+      type: 'string',
+    },
+    title: {
+      describe: 'Note title',
+      demandOption: false,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.title === 'string') {
+      const request: Request = {
+        type: 'remove',
+        user: argv.user,
+        title: argv.title,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    } else if (typeof argv.user == 'string' && typeof argv.title === 'undefined') {
+      const request: Request = {
+        type: 'remove',
+        user: argv.user,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+```
+Por último, para __listar las notas__ se envía un simple mensaje `request` con 2 campos: tipo de operación y el usuario.
+```typescript
+yargs.command({
+  command: 'list',
+  describe: 'List all titles of user notes',
+  builder: {
+    user: {
+      describe: 'User',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string') {
+      const request: Request = {
+        type: 'list',
+        user: argv.user,
+      };
+      socket.write(JSON.stringify(request) + '\n');
+    }
+  },
+});
+```
+### ¿Cómo se realiza la recepción de las respuestas por parte del cliente?
+Cuandos se emite el evento `respond` propio del constructor de la clase `EventEmitterCient` que mencionamos anteriormente. Así pues a través de una estructura `if-else` se comprueba el tipo de mensaje captado y se imprime por pantalla una respuesta u otra. Para ello se observa el valor del campo `success` con el objetivo de comprobar si fuera una operación que dió éxito o que fracasó.
+```typescript
+client.on('respond', (message) => {
+  if (message.type == 'add') {
+    if (message.success) {
+      console.log(chalk.green(`Note has been added correctly!`));
+    } else {
+      console.log(chalk.red('Error: This note already exists!'));
+    }
+  } else if (message.type == 'update') {
+    if (message.success) {
+      console.log(chalk.green(`Note has been updated correctly!`));
+    } else {
+      console.log(chalk.red("Error: This note doesn't exist!"));
+    }
+  } else if (message.type == 'read') {
+    if (message.success) {
+      console.log(new NotePrinter(Note.deserialize(message.notes[0])).print());
+    } else {
+      console.log(chalk.red('Error: This note doesnt exist!'));
+    }
+  } else if (message.type == 'remove') {
+    if (message.success) {
+      console.log(chalk.green(`Note/s has been removed correctly!`));
+    } else {
+      console.log(chalk.red("Error: This note or user doesn't exist!"));
+    }
+  } else if (message.type == 'list') {
+    if (message.success) {
+      message.notes.forEach((note: NoteSchema) => {
+        console.log(new NotePrinter(Note.deserialize(note)).printTitle());
+      });
+    } else {
+      console.log(chalk.red('Error: This user doesnt exist!'));
+    }
+  } else {
+    console.log(chalk.red('Error: Invalid type of message!'));
+  }
+});
+```
+Podemos observar que se hace uso del paquete `chalk` para mostrar los errores en rojo y las confirmacions en verde.
