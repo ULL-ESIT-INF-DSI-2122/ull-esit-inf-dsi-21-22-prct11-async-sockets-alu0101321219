@@ -407,3 +407,6 @@ server.on('request', (message) => {
     }
 ```
 Podemos apreciar que el código a ejecutar para cada tipo de mensaje es similar, así pues se crea un objeto de respuesta `response` con la información obtenida al ejecutar los métodos de la clase `NoteManagement`. Cabe recalcar que estos métodos han sido cambiados con respecto a la práctica 9 para que devuelvan una varaible booleana, la cual identifica el éxito de la operación. Se ha hecho de esta manera para que esta información coincida con el tipo del atributo `success` del mensaje. Las únicas operaciones que difieren de esta implementación son la de leer o listar notas, las cuales devuelven una nota o una lista de notas respectivamente (en el caso de encontrarlas, de otra manera devuelven `undefined`). Para __enviar la información__ se hace uso del método `write` del socket al igual que con el cliente. Nótese que si se trata de un tipo de mensaje no válido también se envía una cadena en formato `JSON` con el tipo `invalid`.
+
+## Referencias
+- [Práctica 11 - Cliente y servidor para una aplicación de procesamiento de notas de texto](https://ull-esit-inf-dsi-2122.github.io/prct11-async-sockets/)
