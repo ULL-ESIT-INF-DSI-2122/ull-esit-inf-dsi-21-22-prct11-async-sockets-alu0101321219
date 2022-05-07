@@ -319,3 +319,91 @@ client.on('respond', (message) => {
 });
 ```
 Podemos observar que se hace uso del paquete `chalk` para mostrar los errores en rojo y las confirmacions en verde.
+
+## Servidor
+Para el desarrollo del código correspondiente con el servidor tenemos el fichero `server.ts`. Como se puede observar más abajo este crea un servidor  mediante el módulo `net` a través de `createServer` y lo pone a escuchar bajo el puerto 60300.
+```typescript
+net.createServer((socket) => {
+  const server = new EventEmitterServer(socket);
+  server.on('request', (message) => {
+  ...
+  });
+  socket.end();
+  socket.on('close', () => {
+    console.log(chalk.green('A request has been attended!!'));
+  });
+}).listen(60300, () => {
+  console.log(chalk.yellow('Server is working!!'));
+});
+```
+Dentro de este se crea un objeto `server` de la clase `EventEmitterServer` inicializado con el socket sobre el que se está escuchando. Así pues, este atenderá peticiones cuando se emita un evento del tipo `request` el cual hemos definido anteriormente cuando comentamos la clase. Una vez captada la petición se enviará un mensaje de tipo `end` para informar al cliente de que la respuesta ya ha sido totalmente enviada. En el caso de que se cierre la conexión se mostrará un mensaje informando de que una petición ha sido atendida. Cuando se active el manejador de este evento se comprobará el tipo de mensaje captado, tal y como hicimos para el caso del cliente.
+```typescript
+server.on('request', (message) => {
+    if (message.type == 'add') {
+      const response: Response = {
+        type: 'add',
+        success: new NoteManagement().addNote(new Note(message.title, message.body, message.color), message.user),
+      };
+      socket.write(JSON.stringify(response));
+    } else if (message.type == 'update') {
+      let result: boolean = false;
+      if (message.body) {
+        result = new NoteManagement().modNoteBody(message.title, message.user, message.body);
+      }
+      if (message.color) {
+        result = new NoteManagement().modNoteColor(message.title, message.user, message.color);
+      }
+      const response: Response = {
+        type: 'update',
+        success: result,
+      };
+      socket.write(JSON.stringify(response));
+    } else if (message.type == 'remove') {
+      let result: boolean = false;
+      if (message.title) {
+        result = new NoteManagement().removeNote(message.title, message.user);
+      } else {
+        result = new NoteManagement().removeAllUserNotes(message.user);
+      }
+      const response: Response = {
+        type: 'remove',
+        success: result,
+      };
+      socket.write(JSON.stringify(response));
+    } else if (message.type == 'read') {
+      const note: Note | undefined = new NoteManagement().readNote(message.title, message.user);
+      let response: Response;
+      if (note) {
+        response = {
+          type: 'read',
+          success: true,
+          notes: [note],
+        };
+      } else {
+        response = {
+          type: 'read',
+          success: false,
+        };
+      }
+      socket.write(JSON.stringify(response));
+    } else if (message.type == 'list') {
+      const notes: Note[] | undefined = new NoteManagement().listNotes(message.user);
+      let response: Response;
+      if (notes) {
+        response = {
+          type: 'list',
+          success: true,
+          notes: notes,
+        };
+      } else {
+        response = {
+          type: 'list',
+          success: false,
+        };
+      }
+      socket.write(JSON.stringify(response));
+    } else {
+      socket.write(JSON.stringify({type: 'invalid'}));
+    }
+```
+Podemos apreciar que el código a ejecutar para cada tipo de mensaje es similar, así pues se crea un objeto de respuesta `response` con la información obtenida al ejecutar los métodos de la clase `NoteManagement`. Cabe recalcar que estos métodos han sido cambiados con respecto a la práctica 9 para que devuelvan una varaible booleana, la cual identifica el éxito de la operación. Se ha hecho de esta manera para que esta información coincida con el tipo del atributo `success` del mensaje. Las únicas operaciones que difieren de esta implementación son la de leer o listar notas, las cuales devuelven una nota o una lista de notas respectivamente (en el caso de encontrarlas, de otra manera devuelven `undefined`). Para __enviar la información__ se hace uso del método `write` del socket al igual que con el cliente. Nótese que si se trata de un tipo de mensaje no válido también se envía una cadena en formato `JSON` con el tipo `invalid`.
