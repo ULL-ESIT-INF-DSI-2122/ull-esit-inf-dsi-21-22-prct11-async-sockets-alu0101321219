@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct09-filesystem-notes-app-alu0101321219#readme",
   "devDependencies": {
     "@types/chai": "^4.3.1",
+    "@types/express": "^4.17.13",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.25",
     "@types/request": "^2.48.8",
@@ -41,6 +42,7 @@
   "dependencies": {
     "@types/yargs": "^17.0.10",
     "chalk": "^4.1.0",
+    "express": "^4.18.1",
     "request": "^2.88.2",
     "yargs": "^17.4.1"
   }
